@@ -340,8 +340,8 @@ class CoveyGameScene extends Phaser.Scene {
     const belowLayer = map.createLayer('Below Player', tileset, 0, 0);
     const wallsLayer = map.createLayer('Walls', tileset, 0, 0);
     const onTheWallsLayer = map.createLayer('On The Walls', tileset, 0, 0);
-    wallsLayer.setCollisionByProperty({ collides: false });
-    onTheWallsLayer.setCollisionByProperty({ collides: false });
+    wallsLayer.setCollisionByProperty({ collides: true });
+    onTheWallsLayer.setCollisionByProperty({ collides: true });
 
     const worldLayer = map.createLayer('World', tileset, 0, 0);
     worldLayer.setCollisionByProperty({ collides: true });

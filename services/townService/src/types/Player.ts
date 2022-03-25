@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { ServerConversationArea } from '../client/TownsServiceClient';
+import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
 import { UserLocation } from '../CoveyTypes';
 
 /**
@@ -46,19 +46,19 @@ export default class Player {
   }
 
   /**
-   * Checks to see if a player's location is within the specified conversation area
+   * Checks to see if a player's location is within the specified bounding box.
    * 
    * This method is resilient to floating point errors that could arise if any of the coordinates of
-   * `this.location` are dramatically smaller than those of the conversation area's bounding box.
-   * @param conversation 
-   * @returns 
+   * `this.location` are dramatically smaller than those of the bounding box.
+   * @param box a BoundingBox which a Player may exist in.
+   * @returns a boolean representing presence in a BoundingBox.
    */
-  isWithin(conversation: ServerConversationArea) : boolean {
+  isWithin(box: BoundingBox) : boolean {
     return (
-      this.location.x > conversation.boundingBox.x - conversation.boundingBox.width / 2 &&
-      this.location.x < conversation.boundingBox.x + conversation.boundingBox.width / 2 &&
-      this.location.y > conversation.boundingBox.y - conversation.boundingBox.height / 2 &&
-      this.location.y < conversation.boundingBox.y + conversation.boundingBox.height / 2
+      this.location.x > box.x - box.width / 2 &&
+      this.location.x < box.x + box.width / 2 &&
+      this.location.y > box.y - box.height / 2 &&
+      this.location.y < box.y + box.height / 2
     );
   }
 

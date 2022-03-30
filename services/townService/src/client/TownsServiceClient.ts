@@ -14,7 +14,6 @@ export type BoundingBox = {
   y: number,
   width: number,
   height: number
-  toRectPoints(): {x1: number, y1: number, x2: number, y2: number};
 };
 export type ServerConversationArea = {
   label: string;
@@ -27,8 +26,8 @@ export type ServerConversationArea = {
  * A bounding box with its location also stored as corner coordinates
  */
 export type GridSquare = BoundingBox & {
-  box: {x1: number, y1: number, x2: number, y2: number};
-}
+  box: { x1: number, y1: number, x2: number, y2: number };
+};
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware

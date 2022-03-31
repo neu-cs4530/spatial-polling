@@ -1,3 +1,5 @@
+import GridSquare from "./GridSquare";
+
 export default class BoundingBox {
   public x: number;
 
@@ -40,4 +42,12 @@ export default class BoundingBox {
     }
   }
 
+  /**
+   * A helper function used to determine what floor tiles lay within this BoundingBox.
+   * @returns the list of GridSquares which are within this bounding box.
+   */
+   getTiles() {
+    let tiles: GridSquare[] = [];
+    return tiles;
+  }
 }

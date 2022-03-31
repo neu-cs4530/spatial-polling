@@ -26,38 +26,36 @@ export default class ConversationAreaPoll {
     this.timer = new PollTimer(duration);
     this._id = nanoid();
 
-    if (!assignOptionsToSquares(ca, options).length) {
-      throw 'error. not enough squares for poll options';
+    // there cannot be more poll options than available tiles
+    if (!assignOptionsToTiles(ca, options).length) {
+      throw 'error: not enough squares for the given number of poll options';
     } else {
-      this.options = assignOptionsToSquares(ca, options);
+      this.options = assignOptionsToTiles(ca, options);
     }
   }
 
   get id(): string {
     return this._id;
   }
-
 }
 
-/**
- * ServerConversationArea, string[] --> PollOption[]
+/** 
+ * ConversationAreaPoll constructor must turn a list of string poll options to a list of PollOptions. 
  * 
- * The ConversationAreaPoll constructor recieves a list of string poll responses and
- * will turn them into a list of PollOptions. 
+ * In order to do this, it must figure out the available tiles within this conversation area, and map 
+ * each option to some tile, without overlaps.
+ * @param conversation the conversation area this poll is in
+ * @param options the list of string options players can vote for. length >= 1.
  * 
- * In order to define each PollOption, it will need to map spots within the conversation
- * to options.
+ * @returns a list of PollOption objects
  */
-function assignOptionsToSquares(conversation: ServerConversationArea, options: string[]): PollOption[] {
-  // 1. get list of the possible GridSquares within conversation
-  let squares: GridSquare[] = conversation.getIndividualSquares();
+function assignOptionsToTiles(conversation: ServerConversationArea, options: string[]): PollOption[] {
+  let tiles: GridSquare[] = conversation.boundingBox.tiles;
   let pollOptions: PollOption[] = [];
-  // 2. check: # options <= # available GridSquares
-  if (options.length >= squares.length) {
-    // 3. map options to squares: string[] --> PollOption[]
-    
-    options.forEach(o => {
-      pollOptions.push(new PollOption(o));
+  if (options.length >= tiles.length) {
+    // TODO later: choose a random tile from tiles array instead of the ith
+    options.forEach((o, i) => {  
+      pollOptions.push(new PollOption(o, tiles[i])); // map options to tiles: string[] --> PollOption[]
     });
   }
 

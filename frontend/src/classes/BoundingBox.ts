@@ -1,4 +1,3 @@
-import GridSquare from "./GridSquare";
 
 export default class BoundingBox {
   public x: number;
@@ -43,11 +42,12 @@ export default class BoundingBox {
   }
 
   /**
-   * A helper function used to determine what floor tiles lay within this BoundingBox.
-   * @returns the list of GridSquares which are within this bounding box.
+   * A helper function used to determine the smaller bounding boxes which make up this bounding box.
+   * @returns the list of tiles which make up this bounding box.
    */
-   getTiles() {
-    let tiles: GridSquare[] = [];
-    return tiles;
+   // this eslint-disable line is only here as this is a stub method to be filled out in my next PR
+   // eslint-disable-next-line class-methods-use-this
+   getTiles(): BoundingBox[] {
+    return [];
   }
 }

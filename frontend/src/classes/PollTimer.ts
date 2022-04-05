@@ -14,6 +14,10 @@ export default class PollTimer {
         this.isPaused = false;
     }
 
+    getCurrentTime() {
+        return this.currentTime;
+    }
+
     /**
      * Basic timer structure for PollTimer class. Functionality will likely change
      * as project continues
@@ -25,6 +29,7 @@ export default class PollTimer {
             }
             if (this.currentTime === 0) {
                 clearInterval(this.timer!);
+                // additional functionality (ex. calling listeners, returns, etc to be added at a later date)
             }
         }, 1000);
     }

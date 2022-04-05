@@ -1,21 +1,17 @@
 export default class PollTimer {
 
-    public maxTime: number;
+    maxTime: number;
 
-    public currentTime: number;
+    currentTime: number;
 
-    public timer: ReturnType<typeof setInterval> | undefined;
+    timer: ReturnType<typeof setInterval> | undefined;
 
-    public isPaused: boolean;
+    isPaused: boolean;
 
     constructor (seconds: number) {
         this.maxTime = seconds;
         this.currentTime = seconds;
         this.isPaused = false;
-    }
-
-    getCurrentTime() {
-        return this.currentTime;
     }
 
     /**

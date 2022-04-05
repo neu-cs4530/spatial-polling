@@ -5,6 +5,7 @@ export type ServerConversationArea = {
   topic?: string;
   occupantsByID: string[];
   boundingBox: BoundingBox;
+  tiles: BoundingBox[];
 };
 
 export type ConversationAreaListener = {
@@ -63,12 +64,21 @@ export default class ConversationArea {
     return this._boundingBox;
   }
 
+  /**
+   * A helper function to get the list of occupiable squares within this conversation area.
+   * @returns a list of the tiles that a player can occupy
+   */
+  getOccupiableTiles(): BoundingBox[] {
+    return this._boundingBox.getTiles();
+  }
+
   toServerConversationArea(): ServerConversationArea {
     return {
       label: this.label,
       occupantsByID: this.occupants,
       topic: this.topic,
       boundingBox: this.getBoundingBox(),
+      tiles: this.getOccupiableTiles(),
     };
   }
 

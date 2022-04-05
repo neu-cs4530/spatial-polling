@@ -13,7 +13,8 @@ export type BoundingBox = {
   x: number,
   y: number,
   width: number,
-  height: number
+  height: number,
+  tiles: GridSquare[],
 };
 export type ServerConversationArea = {
   label: string;

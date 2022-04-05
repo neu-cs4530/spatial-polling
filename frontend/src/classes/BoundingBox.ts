@@ -1,3 +1,4 @@
+
 export default class BoundingBox {
   public x: number;
 
@@ -40,4 +41,13 @@ export default class BoundingBox {
     }
   }
 
+  /**
+   * A helper function used to determine the smaller bounding boxes which make up this bounding box.
+   * @returns the list of tiles which make up this bounding box.
+   */
+   // this eslint-disable line is only here as this is a stub method to be filled out in my next PR
+   // eslint-disable-next-line class-methods-use-this
+   getTiles(): BoundingBox[] {
+    return [];
+  }
 }

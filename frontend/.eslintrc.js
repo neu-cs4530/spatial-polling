@@ -11,6 +11,7 @@ module.exports = {
   ],
   parserOptions: {
     project: './tsconfig.json',
+    tsconfigRootDir: 'frontend',
     warnOnUnsupportedTypeScriptVersion: false,
   },
   settings: {

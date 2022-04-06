@@ -217,8 +217,10 @@ export default class CoveyTownController {
    * @returns true if the boxes overlap, otherwise false
    */
   static boxesOverlap(box1: BoundingBox, box2: BoundingBox):boolean{
-    const rect1 = box1.toRectPoints();
-    const rect2 = box2.toRectPoints();
+    // Helper function to extract the top left (x1,y1) and bottom right corner (x2,y2) of each bounding box
+    const toRectPoints = (box: BoundingBox) => ({ x1: box.x - box.width / 2, x2: box.x + box.width / 2, y1: box.y - box.height / 2, y2: box.y + box.height / 2 });
+    const rect1 = toRectPoints(box1);
+    const rect2 = toRectPoints(box2);
     const noOverlap = rect1.x1 >= rect2.x2 || rect2.x1 >= rect1.x2 || rect1.y1 >= rect2.y2 || rect2.y1 >= rect1.y2;
     return !noOverlap;
   }

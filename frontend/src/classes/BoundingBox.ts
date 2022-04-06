@@ -1,3 +1,4 @@
+
 export default class BoundingBox {
   public x: number;
 
@@ -40,18 +41,13 @@ export default class BoundingBox {
     }
   }
 
-}
-
-/**
- * This extends the BoundingBox class. It stores the result of toRectPoints() for convenience.
- * @param box a dictionary with the coordinates of the top left and bottom right corners of the BoundingBox
- */
-export class GridSquare extends BoundingBox {
-  public box;
-
-  constructor(x: number, y: number, width: number, height: number) {
-    super(x, y, width, height);
-    this.box = this.toRectPoints;
+  /**
+   * A helper function used to determine the smaller bounding boxes which make up this bounding box.
+   * @returns the list of tiles which make up this bounding box.
+   */
+   // this eslint-disable line is only here as this is a stub method to be filled out in my next PR
+   // eslint-disable-next-line class-methods-use-this
+   getTiles(): BoundingBox[] {
+    return [];
   }
-  
 }

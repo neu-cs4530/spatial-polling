@@ -15,7 +15,7 @@ import Player from "./Player";
     private readonly _text: string;
 
      /** list of players who voted for this option * */
-    private _voters: Player[];
+    private _voters: string[];
 
     constructor(text: string, location: GridSquare) {
         this.location = location;
@@ -23,7 +23,7 @@ import Player from "./Player";
         this._voters = [];
     }
      
-    get voters(): Player[] {
+    get voters(): string[] {
         return this._voters ;
     }
 
@@ -35,16 +35,16 @@ import Player from "./Player";
          * Add a given voter to the list of voters.
          * @param player 
          */
-        addVoter(player: Player): void {
-            this._voters.push(player);
+        addVoter(playerId: string): void {
+            this._voters.push(playerId);
         }
         /**
         * Remove a given voter from the list of voters.
         * @param player 
         */
 
-        removeVoter(player: Player): void {
-            this._voters.splice(this._voters.findIndex(p => player === p), 1);
+        removeVoter(playerId: string): void {
+            this._voters.splice(this._voters.findIndex(p => playerId === p), 1);
         }
 
 }

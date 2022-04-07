@@ -10,6 +10,7 @@ import PlayerSession from '../types/PlayerSession';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
+import { ServerConversationArea } from '../client/TownsServiceClient';
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
@@ -256,7 +257,7 @@ describe('CoveyTownController', () => {
       testingTown = new CoveyTownController(townName, false);
     });
     it('should respect the conversation area reported by the player userLocation.conversationLabel, and not override it based on the player\'s x,y location', async ()=>{
-      const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: { x: 10, y: 10, height: 5, width: 5 } });
+      const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: { x: 10, y: 10, height: 5, width: 5, tiles:[] } });
       const result = testingTown.addConversationArea(newConversationArea);
       expect(result).toBe(true);
       const player = new Player(nanoid());
@@ -275,7 +276,7 @@ describe('CoveyTownController', () => {
     }); 
     it('should emit an onConversationUpdated event when a conversation area gets a new occupant', async () =>{
 
-      const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: { x: 10, y: 10, height: 5, width: 5 } });
+      const newConversationArea = TestUtils.createConversationForTesting({ boundingBox: { x: 10, y: 10, height: 5, width: 5, tiles: [] } });
       const result = testingTown.addConversationArea(newConversationArea);
       expect(result).toBe(true);
 
@@ -289,4 +290,46 @@ describe('CoveyTownController', () => {
       expect(mockListener.onConversationAreaUpdated).toHaveBeenCalledTimes(1);
     });
   });
+  describe('addConversationPollHandler', () => {
+    const mockSocket = mock<Socket>();
+    let testingTown: CoveyTownController;
+    let player: Player;
+    let newConversationArea: ServerConversationArea;
+    beforeEach(async () => {
+      const townName = `connectPlayerSocket tests ${nanoid()}`;
+      testingTown = CoveyTownsStore.getInstance().createTown(townName, false);
+      mockReset(mockSocket);
+      player = new Player('test player');
+      const newConversationArea = TestUtils.createConversationForTesting();
+      const result = testingTown.addConversationArea(newConversationArea);
+      expect(result).toBe(true);
+      await testingTown.addPlayer(player);
+    });
+    it('ensures activePoll sets conversationAreaPoll to the conversationArea', async () => {
+      
+      const conversationAreaPoll = TestUtils.createConversationPollForTesting({ conversationArea: newConversationArea, prompt: 'Best Fruit', creator: player });
+      newConversationArea.activePoll(conversationAreaPoll);
+      expect(newConversationArea.activePoll).toEqual(conversationAreaPoll);
+
+      /**ensure event is triggered here */
+
+    })
+    it('ensures a conversationArea only accepts one active poll', async () => {
+
+      const conversationAreaPoll = TestUtils.createConversationPollForTesting({ conversationArea: newConversationArea, prompt: 'Best Fruit', creator: player });
+      newConversationArea.activePoll(conversationAreaPoll);
+      expect(newConversationArea.activePoll).toEqual(conversationAreaPoll);
+
+      const conversationAreaPoll2 = TestUtils.createConversationPollForTesting({ conversationArea: newConversationArea, prompt: 'Best Soup', creator: player });
+      newConversationArea.activePoll(conversationAreaPoll2);
+      expect(newConversationArea.activePoll).toEqual(conversationAreaPoll);
+      expect(newConversationArea.activePoll).toHaveLength(1);
+
+
+    })
+
+  });
+
+
+
 });

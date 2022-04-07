@@ -86,7 +86,7 @@ class CoveyGameScene extends Phaser.Scene {
     this.load.image('12_Kitchen_32x32', '/assets/tilesets/12_Kitchen_32x32.png');
     this.load.image('1_Generic_32x32', '/assets/tilesets/1_Generic_32x32.png');
     this.load.image('13_Conference_Hall_32x32', '/assets/tilesets/13_Conference_Hall_32x32.png');
-    this.load.image('14_Basement_32x32', '/assets/tilesets/14_Basement_32x32.png');
+    // this.load.image('14_Basement_32x32', '/assets/tilesets/14_Basement_32x32.png');
     this.load.image('16_Grocery_store_32x32', '/assets/tilesets/16_Grocery_store_32x32.png');
     this.load.tilemapTiledJSON('map', '/assets/tilemaps/indoors.json');
     this.load.atlas('atlas', '/assets/atlas/atlas.png', '/assets/atlas/atlas.json');
@@ -331,7 +331,7 @@ class CoveyGameScene extends Phaser.Scene {
       '12_Kitchen_32x32',
       '1_Generic_32x32',
       '13_Conference_Hall_32x32',
-      '14_Basement_32x32',
+      // '14_Basement_32x32',
       '16_Grocery_store_32x32',
     ].map(v => map.addTilesetImage(v));
 

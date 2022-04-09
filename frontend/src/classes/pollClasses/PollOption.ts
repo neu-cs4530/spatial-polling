@@ -1,5 +1,5 @@
-import Player from '../Player';
-import { GridSquare } from '../../client/TownsServiceClient';
+import Player from '../../../../services/townService/src/types/Player';
+import BoundingBox from '../BoundingBox';
 
 // TODO: implement the rest of the PollOption class
 /**
@@ -9,11 +9,13 @@ import { GridSquare } from '../../client/TownsServiceClient';
    * @param voters the players who have voted for this option
    */
 export default class PollOption {
-  public text: String;
-  public location: GridSquare;
+  public text: string;
+
+  public location: BoundingBox;
+
   public voters: Player[];
 
-  constructor(text: string, location: GridSquare) {
+  constructor(text: string, location: BoundingBox) {
     this.text = text;
     this.location = location;
     this.voters = [];

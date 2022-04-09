@@ -11,13 +11,17 @@ import usePlayersInTown from '../../hooks/usePlayersInTown';
 import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
+import NewConversationPollModal from './NewConversationPollModal';
+import ConversationAreaPoll from '../../classes/pollClasses/ConversationAreaPoll';
 
 // Original inspiration and code from:
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 
 type ConversationGameObjects = {
   labelText: Phaser.GameObjects.Text;
-  topicText: Phaser.GameObjects.Text;
+  topicText: Phaser.GameObjects.Text; // either "No topic" or <topic>
+  pollText: Phaser.GameObjects.Text; // for now, either "No poll" or <prompt>
+  // will be a DOM elt, active poll modal... persists on screen, people vote until it expires
   sprite: Phaser.GameObjects.Sprite;
   label: string;
   conversationArea?: ConversationArea;
@@ -58,7 +62,12 @@ class CoveyGameScene extends Phaser.Scene {
 
   private infoTextBox?: Phaser.GameObjects.Text;
 
+  private pollTextBox?: Phaser.GameObjects.Text;
+
   private setNewConversation: (conv: ConversationArea) => void;
+
+  private setNewConversationAreaPoll: (newPoll: boolean) => void;
+
 
   private _onGameReadyListeners: Callback[] = [];
 
@@ -66,6 +75,7 @@ class CoveyGameScene extends Phaser.Scene {
     video: Video,
     emitMovement: (loc: UserLocation) => void,
     setNewConversation: (conv: ConversationArea) => void,
+    setNewConversationAreaPoll: (newPoll: boolean) => void,
     myPlayerID: string,
   ) {
     super('PlayGame');
@@ -73,6 +83,7 @@ class CoveyGameScene extends Phaser.Scene {
     this.emitMovement = emitMovement;
     this.myPlayerID = myPlayerID;
     this.setNewConversation = setNewConversation;
+    this.setNewConversationAreaPoll = setNewConversationAreaPoll;
   }
 
   preload() {
@@ -119,7 +130,7 @@ class CoveyGameScene extends Phaser.Scene {
       if (existingArea) {
         // assert(!existingArea.conversationArea);
         existingArea.conversationArea = eachNewArea;
-        const updateListener = {
+        const updateListener = { // these may need to be separated out into two and addListener twice?
           onTopicChange: (newTopic: string | undefined) => {
             if (newTopic) {
               existingArea.topicText.text = newTopic;
@@ -127,9 +138,17 @@ class CoveyGameScene extends Phaser.Scene {
               existingArea.topicText.text = '(No topic)';
             }
           },
+          onActivePollChange: (newPoll: ConversationAreaPoll | undefined) => {
+            if (newPoll) {
+              existingArea.pollText.text = newPoll.prompt;
+            } else {
+              existingArea.pollText.text = '';
+            }
+          }
         };
         eachNewArea.addListener(updateListener);
         updateListener.onTopicChange(eachNewArea.topic);
+        updateListener.onActivePollChange(eachNewArea.activePoll);
       }
     });
     this.conversationAreas.forEach(eachArea => {
@@ -309,6 +328,7 @@ class CoveyGameScene extends Phaser.Scene {
             )
           ) {
             this.infoTextBox?.setVisible(false);
+            this.pollTextBox?.setVisible(false); // i think?
             this.currentConversationArea = undefined;
             this.lastLocation.conversationLabel = undefined;
           }
@@ -402,12 +422,21 @@ class CoveyGameScene extends Phaser.Scene {
         '(No Topic)',
         { color: '#000000' },
       );
+
+      const pollText = this.add.text(
+        sprite.x + sprite.displayWidth / 2,
+        sprite.y + sprite.displayHeight / 2,
+        '',
+        { color: '#000000' },
+      );
+
       sprite.setTintFill();
       sprite.setAlpha(0.3);
 
       this.conversationAreas.push({
         labelText,
         topicText,
+        pollText,
         sprite,
         label: conversation.name,
       });
@@ -424,6 +453,18 @@ class CoveyGameScene extends Phaser.Scene {
       .setDepth(30);
     this.infoTextBox.setVisible(false);
     this.infoTextBox.x = this.game.scale.width / 2 - this.infoTextBox.width / 2;
+
+
+    this.pollTextBox = this.add.text(
+      this.game.scale.width / 2,
+      this.game.scale.height / 2,
+      "Create a poll for the occupants\n of this conversation by\n clicking shift!",
+      { color: '#000000', backgroundColor: '#FFFFFF' },
+    )
+    .setScrollFactor(0)
+    .setDepth(30);
+    this.pollTextBox.setVisible(false);
+    this.pollTextBox.x = this.game.scale.width / 2 - this.pollTextBox.width / 2;
 
     const labels = map.filterObjects('Objects', obj => obj.name === 'label');
     labels.forEach(label => {
@@ -511,15 +552,22 @@ class CoveyGameScene extends Phaser.Scene {
         const conversationLabel = conversationSprite.name;
         const conv = this.conversationAreas.find(area => area.label === conversationLabel);
         this.currentConversationArea = conv;
-        if (conv?.conversationArea) {
+        if (conv?.conversationArea) { // if this HAS been instantiated to a conversation area, listen for shift (poll)
           this.infoTextBox?.setVisible(false);
+          
           const localLastLocation = this.lastLocation;
           if(localLastLocation && localLastLocation.conversationLabel !== conv.conversationArea.label){
             localLastLocation.conversationLabel = conv.conversationArea.label;
             this.emitMovement(localLastLocation);
           }
-        } else {
+          if (cursorKeys.shift.isDown) {
+            console.log('SHIFT');            
+            this.setNewConversationAreaPoll(true);
+          }
+          this.pollTextBox?.setVisible(true);
+        } else { // if this HASNT been instantiated to a conversation area, listen for space
           if (cursorKeys.space.isDown) {
+            console.log('SPACE');
             const newConversation = new ConversationArea(
               conversationLabel,
               BoundingBox.fromSprite(conversationSprite as Phaser.GameObjects.Sprite),
@@ -651,6 +699,16 @@ class CoveyGameScene extends Phaser.Scene {
       this.previouslyCapturedKeys = [];
     }
   }
+
+  // IS THIS ALLOWED?
+  get currCA() {
+    return this.currentConversationArea?.conversationArea;
+  }
+
+  // IS THIS ALLOWED?
+  get currPlayerID() {
+    return this.myPlayerID;
+  }
 }
 
 export default function WorldMap(): JSX.Element {
@@ -659,6 +717,7 @@ export default function WorldMap(): JSX.Element {
   const conversationAreas = useConversationAreas();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   const [newConversation, setNewConversation] = useState<ConversationArea>();
+  const [newConversationAreaPoll, setNewConversationAreaPoll] = useState<boolean>();
   const playerMovementCallbacks = usePlayerMovement();
   const players = usePlayersInTown();
 
@@ -683,7 +742,7 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement, setNewConversation, myPlayerID);
+      const newGameScene = new CoveyGameScene(video, emitMovement, setNewConversation, setNewConversationAreaPoll, myPlayerID);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
@@ -696,7 +755,7 @@ export default function WorldMap(): JSX.Element {
     return () => {
       game.destroy(true);
     };
-  }, [video, emitMovement, setNewConversation, myPlayerID]);
+  }, [video, emitMovement, setNewConversation, setNewConversationAreaPoll, myPlayerID]);
 
   useEffect(() => {
     const movementDispatcher = (player: ServerPlayer) => {
@@ -717,13 +776,14 @@ export default function WorldMap(): JSX.Element {
   }, [conversationAreas, gameScene]);
 
   const newConversationModalOpen = newConversation !== undefined;
+  const newConversationPollModalOpen = newConversationAreaPoll; // !== undefined;
   useEffect(() => {
-    if (newConversationModalOpen) {
+    if (newConversationModalOpen || newConversationPollModalOpen) { // pause the game when either modal is open
       video?.pauseGame();
     } else {
       video?.unPauseGame();
     }
-  }, [video, newConversationModalOpen]);
+  }, [video, newConversationModalOpen, newConversationPollModalOpen]);
 
   const newConversationModal = useMemo(() => {
     if (newConversation) {
@@ -742,9 +802,28 @@ export default function WorldMap(): JSX.Element {
     return <></>;
   }, [video, newConversation, setNewConversation]);
 
+  const newPollModal = useMemo(() => {
+    if (gameScene?.currCA && newConversationAreaPoll) {
+      video?.pauseGame();
+      return (
+        <NewConversationPollModal
+          isOpen
+          closeModal={() => {
+            video?.unPauseGame();
+            setNewConversationAreaPoll(undefined);
+          }}
+          conversation={gameScene.currCA}
+          creator={gameScene.currPlayerID}
+        />
+      );
+      }
+    return <></>;
+  }, [gameScene?.currCA, gameScene?.currPlayerID, newConversationAreaPoll, video]);
+
   return (
     <div id='app-container'>
       {newConversationModal}
+      {newPollModal}
       <div id='map-container' />
       <div id='social-container'>
         <SocialSidebar />

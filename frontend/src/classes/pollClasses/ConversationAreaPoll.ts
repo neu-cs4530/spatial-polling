@@ -18,8 +18,10 @@ import BoundingBox from '../BoundingBox';
   const tiles: BoundingBox[] = boundingBox.getTiles();
   const pollOptions: PollOption[] = [];
 
+  // console.log('tiles.length=', tiles.length);
+  // console.log('options.length=', options.length);
   // can't have more options than tiles
-  if (options.length >= tiles.length) {
+  if (options.length <= tiles.length) {
     // assign each option to random tile of conversation
     options.forEach((o) => {
       const randomIndex = Math.floor(Math.random() * tiles.length);
@@ -37,7 +39,7 @@ import BoundingBox from '../BoundingBox';
 export default class ConversationAreaPoll {
   public prompt: string;
 
-  public creatorID: string; // player id
+  public creatorID: string;
 
   public options: PollOption[];
 
@@ -46,6 +48,14 @@ export default class ConversationAreaPoll {
   /** The unique identifier for this poll * */
   private readonly _id: string;
 
+  /**
+   * Constructor to instantiate a new poll.
+   * @param prompt the poll question
+   * @param boundingBox the bounding box of the conversation area in which this poll is
+   * @param creatorID the id of the Player who created it
+   * @param options the poll response options provided by the creator
+   * @param duration the number of seconds this poll will last for
+   */
   constructor(prompt: string, boundingBox: BoundingBox, creatorID: string, options: string[], duration: number) {
     this.prompt = prompt;
     this.creatorID = creatorID;
@@ -59,6 +69,7 @@ export default class ConversationAreaPoll {
     }
   }
 
+  /** To retrieve the unique identifier for this poll * */
   get id(): string {
     return this._id;
   }

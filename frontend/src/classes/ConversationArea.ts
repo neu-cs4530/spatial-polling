@@ -78,14 +78,6 @@ export default class ConversationArea {
     return this._boundingBox;
   }
 
-  /**
-   * A helper function to get the list of occupiable squares within this conversation area.
-   * @returns a list of the tiles that a player can occupy
-   */
-   getOccupiableTiles(): BoundingBox[] {
-    return this._boundingBox.getTiles();
-  }
-
   toServerConversationArea(): ServerConversationArea {
     return {
       label: this.label,

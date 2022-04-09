@@ -14,17 +14,20 @@ import BoundingBox from '../BoundingBox';
  * 
  * @returns a list of PollOption objects
  */
- // eslint-disable-next-line @typescript-eslint/no-unused-vars
  function assignOptionsToTiles(boundingBox: BoundingBox, options: string[]): PollOption[] {
-  // const {tiles} = conversation.boundingBox;
+  const tiles: BoundingBox[] = boundingBox.getTiles();
   const pollOptions: PollOption[] = [];
-  // if (options.length >= tiles.length) {
-  //   // TODO later: choose a random tile from tiles array instead of the ith
-  //   options.forEach((o, i) => {  
-  //     pollOptions.push(new PollOption(o, tiles[i])); // map options to tiles: string[] --> PollOption[]
-  //   });
-  // }
 
+  // can't have more options than tiles
+  if (options.length >= tiles.length) {
+    // assign each option to random tile of conversation
+    options.forEach((o) => {
+      const randomIndex = Math.floor(Math.random() * tiles.length);
+      pollOptions.push(new PollOption(o, tiles[randomIndex]));
+      tiles.splice(randomIndex, 1);
+    });
+  }
+  // console.log(pollOptions);
   return pollOptions;
 }
 
@@ -49,9 +52,8 @@ export default class ConversationAreaPoll {
     this.timer = new PollTimer(duration);
     this._id = nanoid();
 
-    // there cannot be more than 4 poll options
     if (!assignOptionsToTiles(boundingBox, options).length) {
-      throw new Error('error: more than 4 poll options provided');
+      throw new Error('error: more poll options than tiles');
     } else {
       this.options = assignOptionsToTiles(boundingBox, options);
     }

@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import Player from '../../../../services/townService/src/types/Player';
+// import Player from '../../../../services/townService/src/types/Player';
 import PollOption from './PollOption';
 import PollTimer from './PollTimer';
 import BoundingBox from '../BoundingBox';
@@ -37,7 +37,7 @@ import BoundingBox from '../BoundingBox';
 export default class ConversationAreaPoll {
   public prompt: string;
 
-  public creator: Player;
+  public creatorID: string; // player id
 
   public options: PollOption[];
 
@@ -46,9 +46,9 @@ export default class ConversationAreaPoll {
   /** The unique identifier for this poll * */
   private readonly _id: string;
 
-  constructor(prompt: string, boundingBox: BoundingBox, creator: Player, options: string[], duration: number) {
+  constructor(prompt: string, boundingBox: BoundingBox, creatorID: string, options: string[], duration: number) {
     this.prompt = prompt;
-    this.creator = creator;
+    this.creatorID = creatorID;
     this.timer = new PollTimer(duration);
     this._id = nanoid();
 

@@ -14,6 +14,7 @@ import BoundingBox from '../BoundingBox';
  * 
  * @returns a list of PollOption objects
  */
+ // eslint-disable-next-line @typescript-eslint/no-unused-vars
  function assignOptionsToTiles(boundingBox: BoundingBox, options: string[]): PollOption[] {
   // const {tiles} = conversation.boundingBox;
   const pollOptions: PollOption[] = [];

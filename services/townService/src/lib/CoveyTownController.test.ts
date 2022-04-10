@@ -329,6 +329,30 @@ describe('CoveyTownController', () => {
     })
 
   });
+  describe('PollOption', () => {
+    const mockSocket = mock<Socket>();
+    let testingTown: CoveyTownController;
+    let player: Player;
+    let newConversationArea: ServerConversationArea;
+    beforeEach(async () => {
+      const townName = `connectPlayerSocket tests ${nanoid()}`;
+      testingTown = CoveyTownsStore.getInstance().createTown(townName, false);
+      mockReset(mockSocket);
+      player = new Player('test player');
+      const newConversationArea = TestUtils.createConversationForTesting();
+      const result = testingTown.addConversationArea(newConversationArea);
+      expect(result).toBe(true);
+      await testingTown.addPlayer(player);
+    })
+    it('ensure text and location is defined', async () => {
+
+      const conversationAreaPoll = TestUtils.createConversationPollForTesting({ conversationArea: newConversationArea, prompt: 'Best Fruit', creator: player, options: ['Apple', 'Banana', 'Peach'] });
+      newConversationArea.activePoll(conversationAreaPoll);
+      expect(newConversationArea.activePoll).toEqual(conversationAreaPoll);
+  
+    })
+    
+  })
 
 
 

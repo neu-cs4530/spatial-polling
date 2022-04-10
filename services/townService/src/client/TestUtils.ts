@@ -113,7 +113,7 @@ export function createConversationForTesting(params?:{ conversationLabel?: strin
 }
 
 export function createConversationPollForTesting(params: { conversationArea: ServerConversationArea, prompt: string,
-  creator: Player}) : ConversationAreaPoll {
-  return new ConversationAreaPoll(params.conversationArea, params.prompt, params.creator, [], 120);
+  creator: Player, options?: string[]}) : ConversationAreaPoll {
+  return new ConversationAreaPoll(params.conversationArea, params.prompt, params.creator, params.options || [], 120);
 
 }

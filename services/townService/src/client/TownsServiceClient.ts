@@ -14,13 +14,32 @@ export type BoundingBox = {
   y: number,
   width: number,
   height: number,
-  tiles: GridSquare[],
 };
+
+// TODO
+export type ServerPollOption = {
+  location: GridSquare;
+  text: string;
+  voters: string[];
+};
+
+// TODO
+export type ServerPollTimer = {
+};
+
+export type ServerConversationAreaPoll = {
+  creator: ServerPlayer;
+  prompt: string;
+  options: ServerPollOption[];
+  timer: ServerPollTimer;
+};
+
 export type ServerConversationArea = {
   label: string;
   topic: string;
   occupantsByID: string[];
   boundingBox: BoundingBox;
+  activePoll?: ServerConversationAreaPoll;
 };
 
 /**

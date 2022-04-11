@@ -6,10 +6,9 @@ import { AddressInfo } from 'net';
 import http from 'http';
 import { nanoid } from 'nanoid';
 import { UserLocation } from '../CoveyTypes';
-import { BoundingBox, ServerConversationArea } from './TownsServiceClient';
-import ConversationAreaPoll from '../types/pollTypes/ConversationAreaPoll';
+import { BoundingBox, ServerConversationArea, ServerConversationAreaPoll, ServerPollOption } from './TownsServiceClient';
 import Player from '../types/Player';
-import { GridSquare } from './TownsServiceClient';
+
 
 
 
@@ -105,15 +104,20 @@ export function createConversationForTesting(params?:{ conversationLabel?: strin
   
 
   return {
-    boundingBox: params?.boundingBox || { height: 100, width: 100, x: 400, y: 400, tiles: [{height: 100, width: 100, x: 400, y: 400, box: {x1: 100, x2: 100, y1: 400, y2: 400}, tiles: []}]},
+    boundingBox: params?.boundingBox || { height: 100, width: 100, x: 400, y: 400 },
     label: params?.conversationLabel || nanoid(),
     occupantsByID: [],
     topic: params?.conversationTopic || nanoid(),
   };
 }
 
-export function createConversationPollForTesting(params: { conversationArea: ServerConversationArea, prompt: string,
-  creator: Player, options?: string[]}) : ConversationAreaPoll {
-  return new ConversationAreaPoll(params.conversationArea, params.prompt, params.creator, params.options || [], 120);
+export function createConversationPollForTesting(params: {  prompt: string, boundingBox?: BoundingBox, 
+  creator: Player, options?: ServerPollOption[] }) : ServerConversationAreaPoll {
+  return {
+    creator: { _id: params.creator.id, _userName: params.creator.userName, location: params.creator.location },
+    prompt: params.prompt,
+    options: params.options || [],
+    timer: 120,
+  };
 
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   Button,
   FormControl,
@@ -16,7 +17,7 @@ import {
   import React,{ useCallback,useState } from 'react';
   import ConversationArea from '../../classes/ConversationArea';
   import ConversationAreaPoll from '../../classes/pollClasses/ConversationAreaPoll';
-  import useCoveyAppState from '../../hooks/useCoveyAppState';
+  // import useCoveyAppState from '../../hooks/useCoveyAppState';
   import useMaybeVideo from '../../hooks/useMaybeVideo';
   
   
@@ -26,9 +27,17 @@ import {
       conversation: ConversationArea;
       creator: string;
   }
+
+  type PollOptions = {
+    first: string | undefined,
+    second: string | undefined,
+    third: string | undefined,
+    fourth: string | undefined,
+  };
+
   export default function NewConversationPollModal( {isOpen, closeModal, conversation, creator} : NewConversationPollModalProps): JSX.Element {
       const [prompt, setPrompt] = useState<string>('');
-      const [options, setOptions] = useState<string[]>(['mockOption']);
+      const [options, setOptions] = useState<PollOptions>();
       const [duration, setDuration] = useState<number>(60); // default 1 min
       // const {apiClient, sessionToken, currentTownID} = useCoveyAppState();
   
@@ -36,37 +45,36 @@ import {
       const video = useMaybeVideo()
   
       const createConversationPoll = useCallback(async () => {
-        if (prompt && options.length && duration) {
-            const newPoll = new ConversationAreaPoll(prompt, conversation.getBoundingBox(), creator, options, duration);
-            conversation.activePoll = newPoll; // theres no way this is all i have to do, right?!
-            console.log(`success! conversation ${conversation.label} now has active poll: ${conversation.activePoll}`);
-            toast({
-              title: 'Poll Created!',
-              status: 'success',
-            });
-            video?.unPauseGame();
-            closeModal();
-          // try {
-          //   await apiClient.createConversation({
-          //     sessionToken,
-          //     coveyTownID: currentTownID,
-          //     conversationArea: conversationToCreate.toServerConversationArea(),
-          //   });
-          //   toast({
-          //     title: 'Conversation Created!',
-          //     status: 'success',
-          //   });
-          //   video?.unPauseGame();
-          //   closeModal();
-          // } catch (err) {
-          //   toast({
-          //     title: 'Unable to create conversation',
-          //     description: err.toString(),
-          //     status: 'error',
-          //   });
-          // }
+        console.log('options=');
+        console.log(options);
+        if (prompt && options?.first && duration) {
+          const pollOptions = [];
+          pollOptions.push(options.first);
+          if (options.second) { pollOptions.push(options.second); }
+          if (options.third) { pollOptions.push(options.third); }
+          if (options.fourth) { pollOptions.push(options.fourth); }
+    
+          const newPoll = new ConversationAreaPoll(prompt, conversation.getBoundingBox(), creator, pollOptions, duration);
+          conversation.activePoll = newPoll;
+
+          console.log(`success! conversation ${conversation.label} now has active poll:`);
+          console.log(conversation.activePoll);
+
+          toast({
+            title: 'Poll Created!',
+            status: 'success',
+          });
+        } else {
+          console.log('Something went wrong. Received bad inputs for poll creation.');
+          toast({
+            title: 'Failed to create poll.',
+            description: 'Parameters for poll were insufficient.',
+            status: 'error',
+          });
         }
-      }, [prompt, options, duration, conversation, creator]);
+        video?.unPauseGame();
+        closeModal();
+      }, [options, prompt, duration, video, closeModal, conversation, creator, toast]);
       return (
         <Modal isOpen={isOpen} onClose={()=>{closeModal(); video?.unPauseGame()}}>
           <ModalOverlay />
@@ -89,9 +97,69 @@ import {
                     onChange={(e) => setPrompt(e.target.value)}
                   />
                 </FormControl>
+                <FormControl isRequired>
+                  <FormLabel htmlFor='options.first'>Option 1:</FormLabel>
+                  <Input
+                    id='options.first'
+                    placeholder=''
+                    name='options.first'
+                    value={options?.first}
+                    onChange={(e) => setOptions({
+                      first: e.target.value,
+                      second: options?.second,
+                      third: options?.third,
+                      fourth: options?.fourth
+                    })}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor='options.second'>Option 2:</FormLabel>
+                  <Input
+                    id='options.second'
+                    placeholder=''
+                    name='options.second'
+                    value={options?.second}
+                    onChange={(e) => setOptions({
+                      first: options?.first,
+                      second: e.target.value,
+                      third: options?.third,
+                      fourth: options?.fourth
+                    })}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor='options.third'>Option 3:</FormLabel>
+                  <Input
+                    id='options.third'
+                    placeholder=''
+                    name='options.third'
+                    value={options?.third}
+                    onChange={(e) => setOptions({
+                      first: options?.first,
+                      second: options?.second,
+                      third: e.target.value,
+                      fourth: options?.fourth
+                    })}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor='options.fourth'>Option 4:</FormLabel>
+                  <Input
+                    id='options.fourth'
+                    placeholder=''
+                    name='options.fourth'
+                    value={options?.fourth}
+                    onChange={(e) => setOptions({
+                      first: options?.first,
+                      second: options?.second,
+                      third: options?.third,
+                      fourth: e.target.value
+                    })}
+                  />
+                </FormControl>
               </ModalBody>
               <ModalFooter>
-                <Button colorScheme='blue' mr={3} onClick={createConversationPoll} disabled={!prompt || !options.length || !duration}>
+                <Button colorScheme='blue' mr={3} onClick={createConversationPoll} disabled={!prompt || !options?.first || !duration}>
                   Create
                 </Button>
                 <Button onClick={closeModal}>Cancel</Button>

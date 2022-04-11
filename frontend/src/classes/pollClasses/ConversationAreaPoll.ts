@@ -18,8 +18,6 @@ import BoundingBox from '../BoundingBox';
   const tiles: BoundingBox[] = boundingBox.getTiles();
   const pollOptions: PollOption[] = [];
 
-  // console.log('tiles.length=', tiles.length);
-  // console.log('options.length=', options.length);
   // can't have more options than tiles
   if (options.length <= tiles.length) {
     // assign each option to random tile of conversation

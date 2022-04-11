@@ -136,6 +136,7 @@ class CoveyGameScene extends Phaser.Scene {
               existingArea.topicText.text = newTopic;
             } else {
               existingArea.topicText.text = '(No topic)';
+              existingArea.pollText.text = ''; // This may not be necessary? Should automatically destroy poll when conversation destroyed.
             }
           },
           onActivePollChange: (newPoll: ConversationAreaPoll | undefined) => {
@@ -552,7 +553,7 @@ class CoveyGameScene extends Phaser.Scene {
         const conversationLabel = conversationSprite.name;
         const conv = this.conversationAreas.find(area => area.label === conversationLabel);
         this.currentConversationArea = conv;
-        if (conv?.conversationArea) { // if this HAS been instantiated to a conversation area, listen for shift (poll)
+        if (conv?.conversationArea) {
           this.infoTextBox?.setVisible(false);
           
           const localLastLocation = this.lastLocation;
@@ -560,14 +561,19 @@ class CoveyGameScene extends Phaser.Scene {
             localLastLocation.conversationLabel = conv.conversationArea.label;
             this.emitMovement(localLastLocation);
           }
-          if (cursorKeys.shift.isDown) {
-            console.log('SHIFT');            
-            this.setNewConversationAreaPoll(true);
+
+          // only show instructions to create a poll and listen for shift if no current active poll
+          if (conv.conversationArea.activePoll) {
+            this.pollTextBox?.setVisible(false);
+          } else {
+            this.pollTextBox?.setVisible(true);
+            if (cursorKeys.shift.isDown) {
+              console.log('User clicked shift');            
+              this.setNewConversationAreaPoll(true);
+            }
           }
-          this.pollTextBox?.setVisible(true);
-        } else { // if this HASNT been instantiated to a conversation area, listen for space
+        } else {
           if (cursorKeys.space.isDown) {
-            console.log('SPACE');
             const newConversation = new ConversationArea(
               conversationLabel,
               BoundingBox.fromSprite(conversationSprite as Phaser.GameObjects.Sprite),

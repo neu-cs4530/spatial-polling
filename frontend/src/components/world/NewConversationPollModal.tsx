@@ -17,7 +17,7 @@ import {
   import React,{ useCallback,useState } from 'react';
   import ConversationArea from '../../classes/ConversationArea';
   import ConversationAreaPoll from '../../classes/pollClasses/ConversationAreaPoll';
-  // import useCoveyAppState from '../../hooks/useCoveyAppState';
+  import useCoveyAppState from '../../hooks/useCoveyAppState';
   import useMaybeVideo from '../../hooks/useMaybeVideo';
   
   
@@ -39,14 +39,12 @@ import {
       const [prompt, setPrompt] = useState<string>('');
       const [options, setOptions] = useState<PollOptions>();
       const [duration, setDuration] = useState<number>(60); // default 1 min
-      // const {apiClient, sessionToken, currentTownID} = useCoveyAppState();
+      const {apiClient, sessionToken, currentTownID} = useCoveyAppState();
   
       const toast = useToast()
       const video = useMaybeVideo()
   
       const createConversationPoll = useCallback(async () => {
-        console.log('options=');
-        console.log(options);
         if (prompt && options?.first && duration) {
           const pollOptions = [];
           pollOptions.push(options.first);
@@ -55,26 +53,29 @@ import {
           if (options.fourth) { pollOptions.push(options.fourth); }
     
           const newPoll = new ConversationAreaPoll(prompt, conversation.getBoundingBox(), creator, pollOptions, duration);
-          conversation.activePoll = newPoll;
-
-          console.log(`success! conversation ${conversation.label} now has active poll:`);
-          console.log(conversation.activePoll);
-
-          toast({
-            title: 'Poll Created!',
-            status: 'success',
-          });
-        } else {
-          console.log('Something went wrong. Received bad inputs for poll creation.');
-          toast({
-            title: 'Failed to create poll.',
-            description: 'Parameters for poll were insufficient.',
-            status: 'error',
-          });
+          // conversation.activePoll = newPoll;
+          try {
+            await apiClient.createPoll({
+              sessionToken,
+              coveyTownID: currentTownID,
+              conversationArea: conversation.toServerConversationArea(),
+              poll: newPoll.toServerConversationAreaPoll(),
+            });
+            toast({
+              title: 'Conversation Poll Created!',
+              status: 'success',
+            });
+            video?.unPauseGame();
+            closeModal();
+          } catch (err) {
+            toast({
+              title: 'Unable to create conversation poll',
+              // description: err.toString(),
+              status: 'error',
+            });
+          }
         }
-        video?.unPauseGame();
-        closeModal();
-      }, [options, prompt, duration, video, closeModal, conversation, creator, toast]);
+      }, [options, prompt, duration, video, closeModal, conversation, creator, toast, apiClient, currentTownID, sessionToken]);
       return (
         <Modal isOpen={isOpen} onClose={()=>{closeModal(); video?.unPauseGame()}}>
           <ModalOverlay />

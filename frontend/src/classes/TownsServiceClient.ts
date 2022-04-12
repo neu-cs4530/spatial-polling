@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { ServerPlayer } from './Player';
 import { ServerConversationArea } from './ConversationArea';
+import { ServerConversationAreaPoll } from '../../../services/townService/src/client/TownsServiceClient';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -85,6 +86,13 @@ export interface ConversationCreateRequest {
   conversationArea: ServerConversationArea;
 }
 
+export interface ConversationPollCreateRequest {
+  coveyTownID: string;
+  sessionToken: string;
+  conversationArea: ServerConversationArea;
+  poll: ServerConversationAreaPoll;
+}
+
 /**
  * Envelope that wraps any response from the server
  */
@@ -153,6 +161,11 @@ export default class TownsServiceClient {
   
   async createConversation(requestData: ConversationCreateRequest) : Promise<void>{
     const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversationAreas`, requestData);
+    return TownsServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  async createPoll(requestData: ConversationPollCreateRequest) : Promise<void>{
+    const responseWrapper = await this._axios.post(`/towns/${requestData.coveyTownID}/conversationAreas/poll`, requestData);
     return TownsServiceClient.unwrapOrThrowError(responseWrapper);
   }
 

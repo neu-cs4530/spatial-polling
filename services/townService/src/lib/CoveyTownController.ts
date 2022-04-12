@@ -1,5 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
+import { BoundingBox, ServerConversationArea, ServerConversationAreaPoll } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
@@ -206,6 +206,19 @@ export default class CoveyTownController {
     playersInThisConversation.forEach(player => {player.activeConversationArea = newArea;});
     newArea.occupantsByID = playersInThisConversation.map(player => player.id);
     this._listeners.forEach(listener => listener.onConversationAreaUpdated(newArea));
+    return true;
+  }
+
+  // TODO: comment
+  addConversationAreaPoll(_conversationArea: ServerConversationArea, _poll: ServerConversationAreaPoll): boolean {
+    console.log('\n\nmade it to addConversationAreaPoll!\n\n');
+    const ca = this._conversationAreas.find(
+      eachExistingConversation => eachExistingConversation.label === _conversationArea.label,
+    );
+    if (!ca) {
+      return false; // the provided ca to add this poll to doesnt exist
+    }
+    ca.activePoll = _poll;
     return true;
   }
 

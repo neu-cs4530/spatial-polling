@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 import PollOption from './PollOption';
 import PollTimer from './PollTimer';
 import BoundingBox from '../BoundingBox';
-
+import { ServerConversationAreaPoll } from '../../../../services/townService/src/client/TownsServiceClient';
 /** 
  * ConversationAreaPoll constructor must turn a list of string poll options to a list of PollOptions. 
  * 
@@ -70,6 +70,15 @@ export default class ConversationAreaPoll {
   /** To retrieve the unique identifier for this poll * */
   get id(): string {
     return this._id;
+  }
+
+  toServerConversationAreaPoll(): ServerConversationAreaPoll {
+    return {
+      creator: this.creatorID,
+      prompt: this.prompt,
+      options: this.options,
+      timer: this.timer,
+    };
   }
 }
 

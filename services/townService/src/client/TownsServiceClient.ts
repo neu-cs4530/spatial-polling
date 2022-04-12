@@ -25,7 +25,7 @@ export type ServerPollTimer = {
 };
 
 export type ServerConversationAreaPoll = {
-  creator: ServerPlayer;
+  creator: string;
   prompt: string;
   options: ServerPollOption[];
   timer: ServerPollTimer;
@@ -129,6 +129,16 @@ export interface ConversationAreaCreateRequest {
   coveyTownID: string;
   sessionToken: string;
   conversationArea: ServerConversationArea;
+}
+
+/**
+ * Payload sent by the client to create a new conversation area poll
+ */
+export interface ConversationAreaPollCreateRequest {
+  coveyTownID: string;
+  sessionToken: string;
+  conversationArea: ServerConversationArea;
+  poll: ServerConversationAreaPoll;
 }
 
 /**

@@ -211,7 +211,9 @@ export default class CoveyTownController {
 
   // TODO: comment
   addConversationAreaPoll(_conversationArea: ServerConversationArea, _poll: ServerConversationAreaPoll): boolean {
-    console.log('\n\nmade it to addConversationAreaPoll!\n\n');
+    console.log('\n\nmade it to addConversationAreaPoll.');
+    console.log(`\n\nthe new active poll of conversation${  _conversationArea.label  } is`);
+    console.log(_poll);
     const ca = this._conversationAreas.find(
       eachExistingConversation => eachExistingConversation.label === _conversationArea.label,
     );

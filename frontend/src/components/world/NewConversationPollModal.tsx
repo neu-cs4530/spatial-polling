@@ -53,7 +53,7 @@ import {
           if (options.fourth) { pollOptions.push(options.fourth); }
     
           const newPoll = new ConversationAreaPoll(prompt, conversation.getBoundingBox(), creator, pollOptions, duration);
-          // conversation.activePoll = newPoll;
+          conversation.activePoll = newPoll;
           try {
             await apiClient.createPoll({
               sessionToken,

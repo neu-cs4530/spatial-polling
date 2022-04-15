@@ -1,3 +1,4 @@
+
 export default class BoundingBox {
   public x: number;
 
@@ -40,4 +41,40 @@ export default class BoundingBox {
     }
   }
 
+  /**
+   * A helper function used to determine the quadrants which make up this bounding box.
+   * @returns the list of 4 bounding boxes which make up this bounding box.
+   */
+   getTiles(): BoundingBox[] {
+    // For now I will work with 4 quadrants
+    const q1 = new BoundingBox(
+      this.x - this.width / 2, 
+      this.y - this.height / 2, 
+      this.width / 2,
+      this.height / 2,
+    );
+
+    const q2 = new BoundingBox(
+      this.x + this.width / 2, 
+      this.y - this.height / 2, 
+      this.width / 2,
+      this.height / 2,
+    );
+
+    const q3 = new BoundingBox(
+      this.x - this.width / 2, 
+      this.y + this.height / 2, 
+      this.width / 2,
+      this.height / 2,
+    );
+
+    const q4 = new BoundingBox(
+      this.x + this.width / 2, 
+      this.y + this.height / 2, 
+      this.width / 2,
+      this.height / 2,
+    );
+
+    return [q1,q2,q3,q4];
+  }
 }

@@ -1,6 +1,5 @@
 // TODO: implement PollTimer
 export default class PollTimer {
-
   maxTime: number;
 
   duration: number;

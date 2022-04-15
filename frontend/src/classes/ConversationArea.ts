@@ -1,15 +1,18 @@
 import BoundingBox from './BoundingBox';
+import ConversationAreaPoll from './pollClasses/ConversationAreaPoll';
 
 export type ServerConversationArea = {
   label: string;
   topic?: string;
   occupantsByID: string[];
   boundingBox: BoundingBox;
+  activePoll?: ConversationAreaPoll;
 };
 
 export type ConversationAreaListener = {
   onTopicChange?: (newTopic: string | undefined) => void;
   onOccupantsChange?: (newOccupants: string[]) => void;
+  onActivePollChange?: (newPoll: ConversationAreaPoll | undefined) => void;
 };
 export const NO_TOPIC_STRING = '(No topic)';
 export default class ConversationArea {
@@ -23,6 +26,8 @@ export default class ConversationArea {
 
   private _listeners: ConversationAreaListener[] = [];
 
+  private _activePoll?: ConversationAreaPoll;
+
   constructor(label: string, boundingBox: BoundingBox, topic?: string) {
     this._boundingBox = boundingBox;
     this._label = label;
@@ -31,6 +36,16 @@ export default class ConversationArea {
 
   get label() {
     return this._label;
+  }
+
+  set activePoll(newActivePoll: ConversationAreaPoll | undefined) {
+    // Need check here?
+    this._listeners.forEach(listener => listener.onActivePollChange?.(newActivePoll));
+    this._activePoll = newActivePoll;
+  }
+
+  get activePoll() {
+    return this._activePoll;
   }
 
   set occupants(newOccupants: string[]) {
@@ -69,6 +84,7 @@ export default class ConversationArea {
       occupantsByID: this.occupants,
       topic: this.topic,
       boundingBox: this.getBoundingBox(),
+      activePoll: this.activePoll,
     };
   }
 

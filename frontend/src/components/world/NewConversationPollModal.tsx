@@ -162,7 +162,7 @@ import {
                     })}
                   />
                 </FormControl>
-                <RadioGroup defaultValue={60} onChange={(value) => setDuration(parseInt(value))}>
+                <RadioGroup defaultValue={60} onChange={(value) => setDuration(parseInt(value, 10))}>
                   <Stack direction='row'>
                     <Radio value={60} defaultChecked>1 Minute</Radio>
                     <Radio value={180}>3 Minutes</Radio>

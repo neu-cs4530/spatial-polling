@@ -15,6 +15,7 @@ import { io, Socket } from 'socket.io-client';
 import './App.css';
 import ConversationArea, { ServerConversationArea } from './classes/ConversationArea';
 import Player, { ServerPlayer, UserLocation } from './classes/Player';
+import ConversationAreaPoll from './classes/pollClasses/ConversationAreaPoll';
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import Login from './components/Login/Login';
@@ -218,6 +219,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         if (updatedConversationArea) {
           updatedConversationArea.topic = _conversationArea.topic;
           updatedConversationArea.occupants = _conversationArea.occupantsByID;
+          updatedConversationArea.activePoll = _conversationArea.activePoll;
         } else {
           localConversationAreas = localConversationAreas.concat([
             ConversationArea.fromServerConversationArea(_conversationArea),
@@ -231,6 +233,7 @@ function App(props: { setOnDisconnect: Dispatch<SetStateAction<Callback | undefi
         if(existingArea){
           existingArea.topic = undefined;
           existingArea.occupants = [];
+          existingArea.activePoll = undefined;
         }
         localConversationAreas = localConversationAreas.filter(a => a.label !== _conversationArea.label);
         setConversationAreas(localConversationAreas);

@@ -52,13 +52,15 @@ import {
           if (options.third) { pollOptions.push(options.third); }
           if (options.fourth) { pollOptions.push(options.fourth); }
     
+          const conversationToUpdate = conversation;
           const newPoll = new ConversationAreaPoll(prompt, conversation.getBoundingBox(), creator, pollOptions, duration);
-          conversation.activePoll = newPoll;
+          conversationToUpdate.activePoll = newPoll;
+
           try {
             await apiClient.createPoll({
               sessionToken,
               coveyTownID: currentTownID,
-              conversationArea: conversation.toServerConversationArea(),
+              conversationArea: conversationToUpdate.toServerConversationArea(),
               poll: newPoll.toServerConversationAreaPoll(),
             });
             toast({

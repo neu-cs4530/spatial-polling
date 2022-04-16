@@ -130,15 +130,18 @@ class CoveyGameScene extends Phaser.Scene {
       if (existingArea) {
         // assert(!existingArea.conversationArea);
         existingArea.conversationArea = eachNewArea;
-        const updateListener = { // these may need to be separated out into two and addListener twice?
+        const topicListener = {
           onTopicChange: (newTopic: string | undefined) => {
             if (newTopic) {
               existingArea.topicText.text = newTopic;
             } else {
               existingArea.topicText.text = '(No topic)';
-              existingArea.pollText.text = ''; // This may not be necessary? Should automatically destroy poll when conversation destroyed.
+              // existingArea.pollText.text = ''; // This may not be necessary? Should automatically destroy poll when conversation destroyed.
             }
-          },
+          }
+        };
+
+        const pollListener = { 
           onActivePollChange: (newPoll: ConversationAreaPoll | undefined) => {
             if (newPoll) {
               existingArea.pollText.text = newPoll.prompt;
@@ -147,9 +150,11 @@ class CoveyGameScene extends Phaser.Scene {
             }
           }
         };
-        eachNewArea.addListener(updateListener);
-        updateListener.onTopicChange(eachNewArea.topic);
-        updateListener.onActivePollChange(eachNewArea.activePoll);
+
+        eachNewArea.addListener(topicListener);
+        eachNewArea.addListener(pollListener);
+        topicListener.onTopicChange(eachNewArea.topic);
+        pollListener.onActivePollChange(eachNewArea.activePoll);
       }
     });
     this.conversationAreas.forEach(eachArea => {
@@ -568,7 +573,6 @@ class CoveyGameScene extends Phaser.Scene {
           } else {
             this.pollTextBox?.setVisible(true);
             if (cursorKeys.shift.isDown) {
-              console.log('User clicked shift');            
               this.setNewConversationAreaPoll(true);
             }
           }
@@ -706,12 +710,10 @@ class CoveyGameScene extends Phaser.Scene {
     }
   }
 
-  // IS THIS ALLOWED?
   get currCA() {
     return this.currentConversationArea?.conversationArea;
   }
 
-  // IS THIS ALLOWED?
   get currPlayerID() {
     return this.myPlayerID;
   }
@@ -778,11 +780,12 @@ export default function WorldMap(): JSX.Element {
   }, [gameScene, players]);
 
   useEffect(() => {
+    console.log('triggered conversationAreas useEffect');
     gameScene?.updateConversationAreas(conversationAreas);
   }, [conversationAreas, gameScene]);
 
   const newConversationModalOpen = newConversation !== undefined;
-  const newConversationPollModalOpen = newConversationAreaPoll; // !== undefined;
+  const newConversationPollModalOpen = newConversationAreaPoll;
   useEffect(() => {
     if (newConversationModalOpen || newConversationPollModalOpen) { // pause the game when either modal is open
       video?.pauseGame();

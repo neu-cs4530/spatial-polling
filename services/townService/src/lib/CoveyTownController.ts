@@ -222,17 +222,18 @@ export default class CoveyTownController {
    * @returns true if the poll is successfully assigned to be this conversations active poll, or false if not
    */
   addConversationAreaPoll(_conversationArea: ServerConversationArea, _poll: ServerConversationAreaPoll): boolean {
-    const ca = this._conversationAreas.find(
-      eachExistingConversation => eachExistingConversation.label === _conversationArea.label,
-    );
+    const conversation = this.conversationAreas.find(conv => conv.label === _conversationArea.label);
 
     // if the given conversation doesnt exist or already has a poll
-    if (!ca || ca.activePoll) {
+    if (!conversation || conversation.activePoll) {
       return false;
-    }
-    ca.activePoll = _poll;
+    }    
 
-    // console.log('\nmade it to addConversationAreaPoll.');
+    const newPoll : ServerConversationAreaPoll = Object.assign(_poll);
+    conversation.activePoll = newPoll;
+    // Notify other players that there is a new poll
+    this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
+
     // console.log(`\nthe new active poll of ${  ca.label  } is`);
     // console.log(ca.activePoll);
     return true;

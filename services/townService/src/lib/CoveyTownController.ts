@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { customAlphabet, nanoid } from 'nanoid';
 import { BoundingBox, ServerConversationArea, ServerConversationAreaPoll } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';
@@ -209,18 +210,31 @@ export default class CoveyTownController {
     return true;
   }
 
-  // TODO: comment
+  /**
+   * Assigns to given poll to be the active poll of this conversation area if there it
+   * does not currently have an active poll.
+   *
+   * Notifies any CoveyTownListeners that the conversation has been updated ??
+   *
+   * @param _conversationArea Information describing the conversation area to add the poll to.
+   * @param _poll Information describing the conversations new active poll.
+   *
+   * @returns true if the poll is successfully assigned to be this conversations active poll, or false if not
+   */
   addConversationAreaPoll(_conversationArea: ServerConversationArea, _poll: ServerConversationAreaPoll): boolean {
-    console.log('\n\nmade it to addConversationAreaPoll.');
-    console.log(`\n\nthe new active poll of conversation${  _conversationArea.label  } is`);
-    console.log(_poll);
     const ca = this._conversationAreas.find(
       eachExistingConversation => eachExistingConversation.label === _conversationArea.label,
     );
-    if (!ca) {
-      return false; // the provided ca to add this poll to doesnt exist
+
+    // if the given conversation doesnt exist or already has a poll
+    if (!ca || ca.activePoll) {
+      return false;
     }
     ca.activePoll = _poll;
+
+    // console.log('\nmade it to addConversationAreaPoll.');
+    // console.log(`\nthe new active poll of ${  ca.label  } is`);
+    // console.log(ca.activePoll);
     return true;
   }
 

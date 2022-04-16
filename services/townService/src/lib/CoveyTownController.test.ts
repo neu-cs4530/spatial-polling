@@ -10,6 +10,8 @@ import PlayerSession from '../types/PlayerSession';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
+import { BoundingBox, GridSquare } from "../client/TownsServiceClient"
+
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
@@ -21,6 +23,24 @@ function generateTestLocation(): UserLocation {
     x: Math.floor(Math.random() * 100),
     y: Math.floor(Math.random() * 100),
   };
+}
+
+function toRectPoints(x: number, y: number, width: number, height: number) {
+  return { 
+    x1: x - width / 2, 
+    y1: y - height / 2, 
+    x2: x + width / 2, 
+    y2: y + height / 2 
+  }
+}
+
+function generateGridSquare(i: number): GridSquare {
+  const x = 5 + 10 * i;
+  const y = 5 + 10 * i;
+  const width = 10;
+  const height = 10;
+  const box = toRectPoints(x, y, width, height);
+  return {x, y, width, height, box};
 }
 
 describe('CoveyTownController', () => {
@@ -287,6 +307,10 @@ describe('CoveyTownController', () => {
       const newLocation:UserLocation = { moving: false, rotation: 'front', x: 25, y: 25, conversationLabel: newConversationArea.label };
       testingTown.updatePlayerLocation(player, newLocation);
       expect(mockListener.onConversationAreaUpdated).toHaveBeenCalledTimes(1);
+    });
+    it('should add a Player to a PollOption when they walk inside it', async () => {      
+    });
+    it('should remove Player from a PollOption when they walk outside of it', async () => {      
     });
   });
 });

@@ -11,6 +11,10 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Radio,
+  RadioGroup,
+  
+  Stack,
   
   useToast
   } from '@chakra-ui/react';
@@ -45,10 +49,10 @@ import {
       const video = useMaybeVideo()
   
       const createConversationPoll = useCallback(async () => {
-        if (prompt && options?.first && duration) {
+        if (prompt && options?.first && options?.second && duration) {
           const pollOptions = [];
           pollOptions.push(options.first);
-          if (options.second) { pollOptions.push(options.second); }
+          pollOptions.push(options.second);
           if (options.third) { pollOptions.push(options.third); }
           if (options.fourth) { pollOptions.push(options.fourth); }
     
@@ -115,7 +119,7 @@ import {
                     })}
                   />
                 </FormControl>
-                <FormControl>
+                <FormControl isRequired>
                   <FormLabel htmlFor='options.second'>Option 2:</FormLabel>
                   <Input
                     id='options.second'
@@ -160,9 +164,16 @@ import {
                     })}
                   />
                 </FormControl>
+                <RadioGroup>
+                  <Stack direction='row'>
+                    <Radio isChecked={duration === 60} onChange={() => setDuration(60)}>1 Minute</Radio>
+                    <Radio isChecked={duration === 180} onChange={() => setDuration(180)}>3 Minutes</Radio>
+                    <Radio isChecked={duration === 300} onChange={() => setDuration(300)}>5 Minutes</Radio>
+                  </Stack>
+                </RadioGroup>
               </ModalBody>
               <ModalFooter>
-                <Button colorScheme='blue' mr={3} onClick={createConversationPoll} disabled={!prompt || !options?.first || !duration}>
+                <Button colorScheme='blue' mr={3} onClick={createConversationPoll} disabled={!prompt || !options?.first || !options?.second || !duration}>
                   Create
                 </Button>
                 <Button onClick={closeModal}>Cancel</Button>

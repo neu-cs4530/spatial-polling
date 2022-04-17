@@ -1,8 +1,15 @@
 import { nanoid } from 'nanoid';
-import PollOption from './PollOption';
-import PollTimer from './PollTimer';
+import PollOption, { ServerPollOption } from './PollOption';
+import PollTimer, { ServerPollTimer } from './PollTimer';
 import BoundingBox from '../BoundingBox';
-import { ServerConversationAreaPoll } from '../../../../services/townService/src/client/TownsServiceClient';
+
+export type ServerConversationAreaPoll = {
+  creator: string;
+  prompt: string;
+  options: ServerPollOption[];
+  timer: ServerPollTimer;
+};
+
 /** 
  * ConversationAreaPoll constructor must turn a list of string poll options to a list of PollOptions. 
  * 

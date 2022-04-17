@@ -114,7 +114,7 @@ export function createConversationForTesting(params?:{ conversationLabel?: strin
 export function createConversationPollForTesting(params: {  prompt: string, boundingBox?: BoundingBox, 
   creator: Player, options?: ServerPollOption[] }) : ServerConversationAreaPoll {
   return {
-    creator: { _id: params.creator.id, _userName: params.creator.userName, location: params.creator.location },
+    creator: params.creator.id,
     prompt: params.prompt,
     options: params.options || [],
     timer: 120,

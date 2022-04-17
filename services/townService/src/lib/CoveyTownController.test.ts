@@ -10,7 +10,7 @@ import PlayerSession from '../types/PlayerSession';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
-import { BoundingBox, GridSquare } from "../client/TownsServiceClient"
+import { BoundingBox, GridSquare, ServerConversationArea, ServerPollOption } from '../client/TownsServiceClient';
 
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
@@ -313,4 +313,47 @@ describe('CoveyTownController', () => {
     it('should remove Player from a PollOption when they walk outside of it', async () => {      
     });
   });
+
+  
+
+  describe('addConversationPollHandler', () => {
+    const mockSocket = mock<Socket>();
+    let testingTown: CoveyTownController;
+    let player: Player;
+    let newConversationArea: ServerConversationArea;
+    beforeEach(async () => {
+      const townName = `connectPlayerSocket tests ${nanoid()}`;
+      testingTown = CoveyTownsStore.getInstance().createTown(townName, false);
+      mockReset(mockSocket);
+      player = new Player('test player');
+      newConversationArea = TestUtils.createConversationForTesting();
+      const result = testingTown.addConversationArea(newConversationArea);
+      expect(result).toBe(true);
+      await testingTown.addPlayer(player);
+    });
+    it('ensures activePoll sets conversationAreaPoll to the conversationArea', async () => {
+      
+      const conversationAreaPoll = TestUtils.createConversationPollForTesting({ prompt: 'Best Fruit', creator: player });
+      newConversationArea.activePoll = conversationAreaPoll;
+      expect(newConversationArea.activePoll).toEqual(conversationAreaPoll);
+
+  
+    });
+    it('ensures a conversationAreas active poll is updated to a new active poll and a server conversation at most one active poll at a time', async () => {
+
+      const conversationAreaPoll = TestUtils.createConversationPollForTesting({ prompt: 'Best Fruit', creator: player });
+      newConversationArea.activePoll = conversationAreaPoll;
+      expect(newConversationArea.activePoll).toEqual(conversationAreaPoll);
+
+      const conversationAreaPoll2 = TestUtils.createConversationPollForTesting({ prompt: 'Best Soup', creator: player });
+      newConversationArea.activePoll = conversationAreaPoll2;
+      expect(newConversationArea.activePoll).toEqual(conversationAreaPoll2);
+
+
+    });
+  
+  });
+
+
+
 });

@@ -18,6 +18,9 @@ export type BoundingBox = {
 
 // TODO
 export type ServerPollOption = {
+  location: BoundingBox;
+  text: string;
+  voters: string[];
 };
 
 // TODO

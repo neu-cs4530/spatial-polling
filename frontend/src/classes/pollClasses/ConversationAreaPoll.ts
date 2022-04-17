@@ -1,5 +1,4 @@
 import { nanoid } from 'nanoid';
-// import Player from '../../../../services/townService/src/types/Player';
 import PollOption from './PollOption';
 import PollTimer from './PollTimer';
 import BoundingBox from '../BoundingBox';
@@ -27,7 +26,6 @@ import { ServerConversationAreaPoll } from '../../../../services/townService/src
       tiles.splice(randomIndex, 1);
     });
   }
-  // console.log(pollOptions);
   return pollOptions;
 }
 

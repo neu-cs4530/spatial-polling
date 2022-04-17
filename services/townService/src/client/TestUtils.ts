@@ -6,7 +6,11 @@ import { AddressInfo } from 'net';
 import http from 'http';
 import { nanoid } from 'nanoid';
 import { UserLocation } from '../CoveyTypes';
-import { BoundingBox, ServerConversationArea } from './TownsServiceClient';
+import { BoundingBox, ServerConversationArea, ServerConversationAreaPoll, ServerPollOption } from './TownsServiceClient';
+import Player from '../types/Player';
+
+
+
 
 export type RemoteServerPlayer = {
   location: UserLocation, _userName: string, _id: string
@@ -97,6 +101,7 @@ export function createConversationForTesting(params?:{ conversationLabel?: strin
   conversationTopic?: string,
   boundingBox?: BoundingBox
 }) : ServerConversationArea {
+  
 
   return {
     boundingBox: params?.boundingBox || { height: 100, width: 100, x: 400, y: 400 },
@@ -104,4 +109,15 @@ export function createConversationForTesting(params?:{ conversationLabel?: strin
     occupantsByID: [],
     topic: params?.conversationTopic || nanoid(),
   };
+}
+
+export function createConversationPollForTesting(params: {  prompt: string, boundingBox?: BoundingBox, 
+  creator: Player, options?: ServerPollOption[] }) : ServerConversationAreaPoll {
+  return {
+    creator: { _id: params.creator.id, _userName: params.creator.userName, location: params.creator.location },
+    prompt: params.prompt,
+    options: params.options || [],
+    timer: 120,
+  };
+
 }

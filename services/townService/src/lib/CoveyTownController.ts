@@ -157,18 +157,19 @@ export default class CoveyTownController {
     // Store the PollOption this Player is standing on now (undefined if none exists).
     const pollOption = conversation?.activePoll?.options.find(option => player.isWithin(option.location));
     // Store the PollOption this Player supported before the last move (or undefined if none existed).
-    const prevPollOption = prevConversation?.activePoll?.options.find(option => option.voters.includes(player))
+    const prevPollOption = prevConversation?.activePoll?.options.find(option => option.voters.includes(player.id));
 
     // Only update voter rolls if the Player isn't in the same PollOption.
     if (pollOption !== prevPollOption) {
       // Remove them from the previous PollOption (if any).
       if (prevPollOption) {
-        prevPollOption.removeVoter(player.id);
+        const oldIndex = prevPollOption.voters.findIndex(v => v === player.id);
+        prevPollOption.voters.splice(oldIndex);
       }
 
       // Add them to the new PollOption (if any).
       if (pollOption) {
-        pollOption.addVoter(player.id);
+        pollOption.voters.push(player.id);
       }
     }
 

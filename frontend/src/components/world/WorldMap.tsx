@@ -567,8 +567,7 @@ class CoveyGameScene extends Phaser.Scene {
             this.pollTextBox?.setVisible(false);
           } else {
             this.pollTextBox?.setVisible(true);
-            if (cursorKeys.shift.isDown) {
-              console.log('User clicked shift');            
+            if (cursorKeys.shift.isDown) {         
               this.setNewConversationAreaPoll(true);
             }
           }

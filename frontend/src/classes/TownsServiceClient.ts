@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
 import { ServerPlayer } from './Player';
 import { ServerConversationArea } from './ConversationArea';
-import { ServerConversationAreaPoll } from '../../../services/townService/src/client/TownsServiceClient';
+import { ServerConversationAreaPoll } from './pollClasses/ConversationAreaPoll'
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware

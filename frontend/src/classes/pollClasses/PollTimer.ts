@@ -1,4 +1,14 @@
-// TODO: implement PollTimer
+// TODO
+export type ServerPollTimer = {
+    maxTime: number;
+  
+    duration: number;
+  
+    timer: ReturnType<typeof setInterval> | undefined;
+  
+    isPaused: boolean;
+  };
+
 export default class PollTimer {
   maxTime: number;
 
@@ -21,10 +31,10 @@ export default class PollTimer {
   startTimer() {
       this.timer = setInterval(() => {
           if (!this.isPaused) {
-              this.duration = this.duration - 1;
+              this.duration -= 1;
           }
-          if (this.duration === 0) {
-              clearInterval(this.timer!);
+          if (this.duration === 0 && this.timer) {
+              clearInterval(this.timer);
               // additional functionality (ex. calling listeners, returns, etc to be added at a later date)
           }
       }, 1000);
@@ -35,8 +45,8 @@ export default class PollTimer {
    * @param seconds 
    */
   addTime(seconds: number) {
-      this.duration = this.duration + seconds;
-      this.maxTime = this.maxTime + seconds;
+      this.duration += seconds;
+      this.maxTime += seconds;
   }
 
   /**

@@ -10,7 +10,7 @@ import PlayerSession from '../types/PlayerSession';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
-import { BoundingBox, GridSquare, ServerConversationArea, ServerPollOption } from '../client/TownsServiceClient';
+import { ServerConversationArea } from '../client/TownsServiceClient';
 
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
@@ -25,23 +25,23 @@ function generateTestLocation(): UserLocation {
   };
 }
 
-function toRectPoints(x: number, y: number, width: number, height: number) {
-  return { 
-    x1: x - width / 2, 
-    y1: y - height / 2, 
-    x2: x + width / 2, 
-    y2: y + height / 2 
-  }
-}
+// function toRectPoints(x: number, y: number, width: number, height: number) {
+//   return { 
+//     x1: x - width / 2, 
+//     y1: y - height / 2, 
+//     x2: x + width / 2, 
+//     y2: y + height / 2, 
+//   };
+// }
 
-function generateGridSquare(i: number): GridSquare {
-  const x = 5 + 10 * i;
-  const y = 5 + 10 * i;
-  const width = 10;
-  const height = 10;
-  const box = toRectPoints(x, y, width, height);
-  return {x, y, width, height, box};
-}
+// function generateGridSquare(i: number): GridSquare {
+//   const x = 5 + 10 * i;
+//   const y = 5 + 10 * i;
+//   const width = 10;
+//   const height = 10;
+//   const box = toRectPoints(x, y, width, height);
+//   return {x, y, width, height, box};
+// }
 
 describe('CoveyTownController', () => {
   beforeEach(() => {

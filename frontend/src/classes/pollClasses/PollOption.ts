@@ -1,7 +1,11 @@
-import { ServerPollOption } from "../../../../services/townService/src/client/TownsServiceClient";
 import BoundingBox from "../BoundingBox";
 
-
+// TODO
+export type ServerPollOption = {
+    location: BoundingBox;
+    text: string;
+    voters: string[];
+  };
 
 /** A PollOption class which defines the state of one poll choice and manages changes
  * to the state as users move in and out of this poll option's location.

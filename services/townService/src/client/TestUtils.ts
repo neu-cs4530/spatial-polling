@@ -1,19 +1,23 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { io, Socket } from 'socket.io-client';
-import { Socket as ServerSocket } from 'socket.io';
-
-import { AddressInfo } from 'net';
 import http from 'http';
 import { nanoid } from 'nanoid';
+import { AddressInfo } from 'net';
+import { Socket as ServerSocket } from 'socket.io';
+import { io, Socket } from 'socket.io-client';
 import { UserLocation } from '../CoveyTypes';
-import { BoundingBox, ServerConversationArea, ServerConversationAreaPoll, ServerPollOption } from './TownsServiceClient';
 import Player from '../types/Player';
-
-
-
+import {
+  BoundingBox,
+  GridSquare,
+  ServerConversationArea,
+  ServerConversationAreaPoll,
+  ServerPollOption,
+} from './TownsServiceClient';
 
 export type RemoteServerPlayer = {
-  location: UserLocation, _userName: string, _id: string
+  location: UserLocation;
+  _userName: string;
+  _id: string;
 };
 const createdSocketClients: Socket[] = [];
 
@@ -23,7 +27,7 @@ const createdSocketClients: Socket[] = [];
  * be called in the afterEach() handler in any test suite that calls createSocketClient (this should already be in place
  * in the handout code))
  */
-export function cleanupSockets() : void {
+export function cleanupSockets(): void {
   while (createdSocketClients.length) {
     const socket = createdSocketClients.pop();
     if (socket && socket.connected) {
@@ -44,40 +48,46 @@ export function cleanupSockets() : void {
  * @param sessionToken A Covey.Town session token to pass as authentication
  * @param coveyTownID A Covey.Town Town ID to pass to the server as our desired town
  */
-export function createSocketClient(server: http.Server, sessionToken: string, coveyTownID: string): {
-  socket: Socket,
-  socketConnected: Promise<void>,
-  socketDisconnected: Promise<void>,
-  playerMoved: Promise<RemoteServerPlayer>,
-  newPlayerJoined: Promise<RemoteServerPlayer>,
-  playerDisconnected: Promise<RemoteServerPlayer>,
-} {
+
+export function createSocketClient(
+  server: http.Server,
+  sessionToken: string,
+  coveyTownID: string,
+): {
+    socket: Socket;
+    socketConnected: Promise<void>;
+    socketDisconnected: Promise<void>;
+    playerMoved: Promise<RemoteServerPlayer>;
+    newPlayerJoined: Promise<RemoteServerPlayer>;
+    playerDisconnected: Promise<RemoteServerPlayer>;
+  } {
   const address = server.address() as AddressInfo;
   const socket = io(`http://localhost:${address.port}`, {
     auth: { token: sessionToken, coveyTownID },
-    reconnection: false, timeout: 5000,
+    reconnection: false,
+    timeout: 5000,
   });
-  const connectPromise = new Promise<void>((resolve) => {
+  const connectPromise = new Promise<void>(resolve => {
     socket.on('connect', () => {
       resolve();
     });
   });
-  const disconnectPromise = new Promise<void>((resolve) => {
+  const disconnectPromise = new Promise<void>(resolve => {
     socket.on('disconnect', () => {
       resolve();
     });
   });
-  const playerMovedPromise = new Promise<RemoteServerPlayer>((resolve) => {
+  const playerMovedPromise = new Promise<RemoteServerPlayer>(resolve => {
     socket.on('playerMoved', (player: RemoteServerPlayer) => {
       resolve(player);
     });
   });
-  const newPlayerPromise = new Promise<RemoteServerPlayer>((resolve) => {
+  const newPlayerPromise = new Promise<RemoteServerPlayer>(resolve => {
     socket.on('newPlayer', (player: RemoteServerPlayer) => {
       resolve(player);
     });
   });
-  const playerDisconnectPromise = new Promise<RemoteServerPlayer>((resolve) => {
+  const playerDisconnectPromise = new Promise<RemoteServerPlayer>(resolve => {
     socket.on('playerDisconnect', (player: RemoteServerPlayer) => {
       resolve(player);
     });
@@ -92,17 +102,20 @@ export function createSocketClient(server: http.Server, sessionToken: string, co
     playerDisconnected: playerDisconnectPromise,
   };
 }
-export function setSessionTokenAndTownID(coveyTownID: string, sessionToken: string, socket: ServerSocket):void {
+export function setSessionTokenAndTownID(
+  coveyTownID: string,
+  sessionToken: string,
+  socket: ServerSocket,
+): void {
   // eslint-disable-next-line
-  socket.handshake.auth = {token: sessionToken, coveyTownID};
+  socket.handshake.auth = { token: sessionToken, coveyTownID };
 }
 
-export function createConversationForTesting(params?:{ conversationLabel?: string,
-  conversationTopic?: string,
-  boundingBox?: BoundingBox
-}) : ServerConversationArea {
-  
-
+export function createConversationForTesting(params?: {
+  conversationLabel?: string;
+  conversationTopic?: string;
+  boundingBox?: BoundingBox;
+}): ServerConversationArea {
   return {
     boundingBox: params?.boundingBox || { height: 100, width: 100, x: 400, y: 400 },
     label: params?.conversationLabel || nanoid(),
@@ -111,13 +124,30 @@ export function createConversationForTesting(params?:{ conversationLabel?: strin
   };
 }
 
-export function createConversationPollForTesting(params: {  prompt: string, boundingBox?: BoundingBox, 
-  creator: Player, options?: ServerPollOption[] }) : ServerConversationAreaPoll {
-  return {
-    creator: { _id: params.creator.id, _userName: params.creator.userName, location: params.creator.location },
-    prompt: params.prompt,
-    options: params.options || [],
-    timer: 120,
+export function createConversationPollForTesting(params: {
+  prompt: string;
+  creator: Player;
+  options?: ServerPollOption[];
+}): ServerConversationAreaPoll {
+  const gridSquare: GridSquare = {
+    box: { x1: 10, x2: 10, y1: 10, y2: 10 },
+    height: 10,
+    width: 10,
+    x: 10,
+    y: 10,
   };
-
+  const pollOptions: ServerPollOption[] = [
+    { location: gridSquare, text: 'Grape', voters: [params.creator.id] },
+    { location: gridSquare, text: 'Apple', voters: [params.creator.id] },
+  ];
+  return {
+    creator: {
+      _id: params.creator.id,
+      _userName: params.creator.userName,
+      location: params.creator.location,
+    },
+    options: params.options || pollOptions,
+    prompt: params.prompt,
+    timer: { duration: 1500 },
+  };
 }

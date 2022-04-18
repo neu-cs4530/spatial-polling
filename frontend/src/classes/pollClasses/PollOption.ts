@@ -1,6 +1,11 @@
-import  GridSquare from "../../classes/GridSquare";
+import BoundingBox from "../BoundingBox";
 
-
+// TODO
+export type ServerPollOption = {
+    location: BoundingBox;
+    text: string;
+    voters: string[];
+  };
 
 /** A PollOption class which defines the state of one poll choice and manages changes
  * to the state as users move in and out of this poll option's location.
@@ -9,7 +14,7 @@ import  GridSquare from "../../classes/GridSquare";
  export default class PollOption {
 
      /** location of the poll * */ 
-    public location: GridSquare;
+    public location: BoundingBox;
 
      /** title of the poll * */
     private readonly _text: string;
@@ -17,7 +22,7 @@ import  GridSquare from "../../classes/GridSquare";
      /** list of players who voted for this option * */
     private _voters: string[];
 
-    constructor(text: string, location: GridSquare) {
+    constructor(text: string, location: BoundingBox) {
         this.location = location;
         this._text = text;
         this._voters = [];
@@ -31,19 +36,27 @@ import  GridSquare from "../../classes/GridSquare";
         return this._text;
     }
 
-        /**
-         * Add a given voter to the list of voters.
-         * @param player 
-         */
-        addVoter(playerId: string): void {
-            this._voters.push(playerId);
-        }
-        /**
-        * Remove a given voter from the list of voters.
-        * @param player 
-        */
-
-        removeVoter(playerId: string): void {
-            this._voters.splice(this._voters.findIndex(p => playerId === p), 1);
-        }
+    /**
+     * Add a given voter to the list of voters.
+     * @param player 
+     */
+    addVoter(playerId: string): void {
+        this._voters.push(playerId);
     }
+
+    /**
+    * Remove a given voter from the list of voters.
+    * @param player 
+    */
+    removeVoter(playerId: string): void {
+        this._voters.splice(this._voters.findIndex(p => playerId === p), 1);
+    }
+
+    toServerPollOption(): ServerPollOption {
+        return {
+            location: this.location,
+            text: this._text,
+            voters: this._voters,
+        };
+      }
+}

@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import { customAlphabet, nanoid } from 'nanoid';
-import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
+import { BoundingBox, ServerConversationArea, ServerConversationAreaPoll } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
@@ -153,6 +154,25 @@ export default class CoveyTownController {
       }
     }
 
+    // Store the PollOption this Player is standing on now (undefined if none exists).
+    const pollOption = conversation?.activePoll?.options.find(option => player.isWithin(option.location));
+    // Store the PollOption this Player supported before the last move (or undefined if none existed).
+    const prevPollOption = prevConversation?.activePoll?.options.find(option => option.voters.includes(player.id));
+
+    // Only update voter rolls if the Player isn't in the same PollOption.
+    if (pollOption !== prevPollOption) {
+      // Remove them from the previous PollOption (if any).
+      if (prevPollOption) {
+        const oldIndex = prevPollOption.voters.findIndex(v => v === player.id);
+        prevPollOption.voters.splice(oldIndex);
+      }
+
+      // Add them to the new PollOption (if any).
+      if (pollOption) {
+        pollOption.voters.push(player.id);
+      }
+    }
+
     this._listeners.forEach(listener => listener.onPlayerMoved(player));
   }
 
@@ -206,6 +226,34 @@ export default class CoveyTownController {
     playersInThisConversation.forEach(player => {player.activeConversationArea = newArea;});
     newArea.occupantsByID = playersInThisConversation.map(player => player.id);
     this._listeners.forEach(listener => listener.onConversationAreaUpdated(newArea));
+    return true;
+  }
+
+  /**
+   * Assigns to given poll to be the active poll of this conversation area if there it
+   * does not currently have an active poll.
+   *
+   * Notifies any CoveyTownListeners that the conversation has been updated ??
+   *
+   * @param _conversationArea Information describing the conversation area to add the poll to.
+   * @param _poll Information describing the conversations new active poll.
+   *
+   * @returns true if the poll is successfully assigned to be this conversations active poll, or false if not
+   */
+  addConversationAreaPoll(_conversationArea: ServerConversationArea, _poll: ServerConversationAreaPoll): boolean {
+    const ca = this._conversationAreas.find(
+      eachExistingConversation => eachExistingConversation.label === _conversationArea.label,
+    );
+
+    // if the given conversation doesnt exist or already has a poll
+    if (!ca || ca.activePoll) {
+      return false;
+    }
+    ca.activePoll = _poll;
+
+    // console.log('\nmade it to addConversationAreaPoll.');
+    // console.log(`\nthe new active poll of ${  ca.label  } is`);
+    // console.log(ca.activePoll);
     return true;
   }
 

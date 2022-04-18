@@ -54,13 +54,13 @@ export function createSocketClient(
   sessionToken: string,
   coveyTownID: string,
 ): {
-    socket: Socket;
-    socketConnected: Promise<void>;
-    socketDisconnected: Promise<void>;
-    playerMoved: Promise<RemoteServerPlayer>;
-    newPlayerJoined: Promise<RemoteServerPlayer>;
-    playerDisconnected: Promise<RemoteServerPlayer>;
-  } {
+  socket: Socket;
+  socketConnected: Promise<void>;
+  socketDisconnected: Promise<void>;
+  playerMoved: Promise<RemoteServerPlayer>;
+  newPlayerJoined: Promise<RemoteServerPlayer>;
+  playerDisconnected: Promise<RemoteServerPlayer>;
+} {
   const address = server.address() as AddressInfo;
   const socket = io(`http://localhost:${address.port}`, {
     auth: { token: sessionToken, coveyTownID },
@@ -124,7 +124,6 @@ export function createConversationForTesting(params?: {
   };
 }
 
-<<<<<<< HEAD
 export function createConversationPollForTesting(params: {
   prompt: string;
   creator: Player;
@@ -150,14 +149,5 @@ export function createConversationPollForTesting(params: {
     options: params.options || pollOptions,
     prompt: params.prompt,
     timer: { duration: 1500 },
-=======
-export function createConversationPollForTesting(params: {  prompt: string, boundingBox?: BoundingBox, 
-  creator: Player, options?: ServerPollOption[] }) : ServerConversationAreaPoll {
-  return {
-    creator: params.creator.id,
-    prompt: params.prompt,
-    options: params.options || [],
-    timer: 120,
->>>>>>> 9e29de326a1f9db68813aa5adc321a5e51353634
   };
 }

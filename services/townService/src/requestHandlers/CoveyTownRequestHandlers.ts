@@ -4,7 +4,7 @@ import Player from '../types/Player';
 import { ChatMessage, CoveyTownList, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import { ConversationAreaCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
+import { ConversationAreaCreateRequest, ConversationAreaPollCreateRequest, ServerConversationArea } from '../client/TownsServiceClient';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -173,6 +173,22 @@ export function townUpdateHandler(requestData: TownUpdateRequest): ResponseEnvel
 
 }
 
+
+export function conversationAreaPollCreateHandler(_requestData: ConversationAreaPollCreateRequest) : ResponseEnvelope<Record<string, null>> {
+  const townsStore = CoveyTownsStore.getInstance();
+  const townController = townsStore.getControllerForTown(_requestData.coveyTownID);
+  if (!townController?.getSessionByToken(_requestData.sessionToken)){
+    return {
+      isOK: false, response: {}, message: `Unable to create poll in conversation area ${_requestData.conversationArea.label}`,
+    };
+  }
+  const success = townController.addConversationAreaPoll(_requestData.conversationArea, _requestData.poll);
+  return {
+    isOK: success,
+    response: {},
+    message: !success ? `Unable to create poll in conversation area ${_requestData.conversationArea.label}` : undefined,
+  };
+}
 /**
  * A handler to process the "Create Conversation Area" request
  * The intended flow of this handler is:

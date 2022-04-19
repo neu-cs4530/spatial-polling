@@ -1,8 +1,8 @@
 import { Modal, ModalBody, ModalCloseButton, ModalHeader, ModalOverlay } from "@chakra-ui/react";
 import useMaybeVideo from "../../hooks/useMaybeVideo";
-import { ActivePollViewProps, listOptions } from "./ActivePollView";
+import { PollViewProps, listOptions } from "./ActivePollView";
 
-export default function ActivePollViewCreator(apvProps: ActivePollViewProps) {
+export default function ActivePollViewCreator(apvProps: PollViewProps) {
     const video = useMaybeVideo()
     return (
     <Modal isOpen={apvProps.isOpen} onClose={()=>{apvProps.closeModal(); video?.unPauseGame;}}>
@@ -14,7 +14,7 @@ export default function ActivePollViewCreator(apvProps: ActivePollViewProps) {
         </ModalHeader>
         <ModalBody pb={6}>
             <text>
-                <b>Current Prompt:</b> {apvProps.poll.prompt}
+                <b>Current Prompt:</b> {apvProps.poll!.prompt}
             </text>
             <text>
                 <b>Current Poll Options:</b>

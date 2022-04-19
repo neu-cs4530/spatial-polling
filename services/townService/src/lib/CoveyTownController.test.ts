@@ -507,7 +507,7 @@ describe('CoveyTownController', () => {
     });
     it('Ensure .addVoter works correctly', async () => {
       const player2 = new Player(nanoid());
-      const player3 = new Player(nanoid());
+     
 
       const conversationAreaPoll = TestUtils.createConversationPollForTesting({
         prompt: 'Best Fruit',
@@ -539,7 +539,7 @@ describe('CoveyTownController', () => {
         ],
       });
 
-      // Ensure it doesn't accpet an empty array of Voters
+      // Ensure it doesn't accept an empty array of Voters
       newConversationArea.activePoll = conversationAreaPoll;
       expect(newConversationArea.activePoll).toBeUndefined();
     });

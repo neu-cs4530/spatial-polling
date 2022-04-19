@@ -40,18 +40,20 @@ export type ServerPollOption = {
      * Add a given voter to the list of voters.
      * @param player 
      */
-    addVoter(playerId: string): void {
-        this._voters.push(playerId);
+    set addVoter(playerId: string){
+        if (!this._voters.includes(playerId)){
+            this._voters.push(playerId);
+        }
     }
 
     /**
     * Remove a given voter from the list of voters.
     * @param player 
     */
-    removeVoter(playerId: string): void {
+    set removeVoter(playerId: string) {
         this._voters.splice(this._voters.findIndex(p => playerId === p), 1);
     }
-
+ 
     toServerPollOption(): ServerPollOption {
         return {
             location: this.location,

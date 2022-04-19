@@ -20,6 +20,8 @@ export type ServerPollOption = {
   text: string;
   voters: string[];
   location: GridSquare;
+  addVoter?: string;
+  removeVoter?: string;
 };
 
 // TODO

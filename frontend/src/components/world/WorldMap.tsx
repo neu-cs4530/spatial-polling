@@ -21,8 +21,6 @@ import ConversationAreaPoll from '../../classes/pollClasses/ConversationAreaPoll
 type ConversationGameObjects = {
   labelText: Phaser.GameObjects.Text;
   topicText: Phaser.GameObjects.Text; // either "No topic" or <topic>
-  // pollText: Phaser.GameObjects.Text; // for now, either "No poll" or <prompt>
-  // will be a DOM elt, active poll modal... persists on screen, people vote until it expires
   sprite: Phaser.GameObjects.Sprite;
   label: string;
   conversationArea?: ConversationArea;
@@ -436,20 +434,12 @@ class CoveyGameScene extends Phaser.Scene {
         { color: '#000000' },
       );
 
-      // const pollText = this.add.text(
-      //   sprite.x + sprite.displayWidth / 2,
-      //   sprite.y + sprite.displayHeight / 2,
-      //   '',
-      //   { color: '#000000' },
-      // );
-
       sprite.setTintFill();
       sprite.setAlpha(0.3);
 
       this.conversationAreas.push({
         labelText,
         topicText,
-        // pollText,
         sprite,
         label: conversation.name,
       });
@@ -576,11 +566,9 @@ class CoveyGameScene extends Phaser.Scene {
 
           // only show instructions to create a poll and listen for shift if no current active poll
           if (conv.conversationArea.activePoll) {
-            // console.log('theres an active poll...');
-            this.pollTextBox?.setVisible(false); // dont show 'press shift'
-            this.setActiveConversationAreaPoll(true); // show button to hover for active poll
+            this.pollTextBox?.setVisible(false);
+            this.setActiveConversationAreaPoll(true);
           } else {
-            // console.log(conv.conversationArea);
             this.pollTextBox?.setVisible(true);
             this.setActiveConversationAreaPoll(false);
             if (cursorKeys.shift.isDown) {         
@@ -843,27 +831,27 @@ export default function WorldMap(): JSX.Element {
   }, [gameScene?.currCA, gameScene?.currPlayerID, newConversationAreaPoll, video]);
 
   const activePollView = useMemo(() => {
-    if (activeConversationAreaPoll) {
-      // console.log('theres an active poll!');
-      // return (
-      //   <ActiveConversationPollModal
-      //   />
-      // );
-      }
-    else {
-      // console.log('theres no active poll');
+    if (gameScene?.currCA?.activePoll && activeConversationAreaPoll) {
+      // console.log('theres an active poll:');
+      // console.log(gameScene?.currCA?.activePoll);
+      return (
+        <ActiveConversationPollModal 
+          conversation={gameScene?.currCA}
+          poll={gameScene?.currCA?.activePoll}
+        />
+      );
     }
     return <></>;
-  }, [activeConversationAreaPoll]);
+  }, [activeConversationAreaPoll, gameScene?.currCA]);
 
   return (
     <div id='app-container'>
       {newConversationModal}
       {newPollModal}
-      {activePollView}
       <div id='map-container' />
       <div id='social-container'>
         <SocialSidebar />
+        {activePollView}
       </div>
     </div>
   );

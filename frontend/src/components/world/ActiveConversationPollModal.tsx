@@ -13,72 +13,65 @@ import {
   ModalHeader,
   ModalOverlay,
   Progress,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
   useDisclosure,
   } from '@chakra-ui/react';
   import React,{ useCallback,useState } from 'react';
   import ConversationArea from '../../classes/ConversationArea';
   import ConversationAreaPoll from '../../classes/pollClasses/ConversationAreaPoll';
+import PollOption from '../../classes/pollClasses/PollOption';
   import useCoveyAppState from '../../hooks/useCoveyAppState';
   import useMaybeVideo from '../../hooks/useMaybeVideo';
   
   
-  type NewConversationPollModalProps = {
-      isOpen: boolean;
-      closeModal: ()=>void;
+  type ActiveConversationPollModalProps = {
+      poll: ConversationAreaPoll;
       conversation: ConversationArea;
-      creator: string;
   }
 
-  // export default function NewConversationPollModal( {isOpen, closeModal, conversation, creator} : NewConversationPollModalProps): JSX.Element {
-  //     // const {apiClient, sessionToken, currentTownID} = useCoveyAppState();
+export default function ActiveConversationPollModal( {poll, conversation} : ActiveConversationPollModalProps ) {
+     
   
-  //     const video = useMaybeVideo()
-  
-  //     return (
-  //       <Modal isOpen={isOpen} onClose={()=>{closeModal(); video?.unPauseGame()}}>
-  //         <ModalOverlay />
-  //         <ModalContent>
-  //           <ModalHeader>Active Poll: {conversation.activePoll?.prompt} </ModalHeader>
-  //           <ModalHeader>Time left to vote: {conversation.activePoll?.timer.timer} </ModalHeader>
-  //           <ModalCloseButton />
-  //             <ModalBody pb={6}>
+  function getVoters(o: PollOption) {
+    return o.voters.toString();
+  }
 
-                
-  //             </ModalBody>
-  //             <ModalFooter>
-  //               <Button onClick={closeModal}>Cancel</Button>
-  //             </ModalFooter>
-  //         </ModalContent>
-  //       </Modal>
-  //     );
-  // }
+  function getPercent(o: PollOption, c: ConversationArea) {
+    console.log(`o.voters?.length=${  o.voters?.length}`);
+    console.log(`conversation.occupants?.length=${  conversation.occupants?.length}`);
+    return (o.voters?.length / conversation.occupants?.length) * 100;
+  }
 
-  export default function ActiveConversationPollModal() {
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    return (
+  return (
       <>
-        <Button onClick={onOpen}>Open Modal</Button>
-        <Modal
-          isCentered
-          onClose={onClose}
-          isOpen
-          motionPreset='slideInBottom'
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Modal Title</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloremque laborum distinctio, consequuntur tempore qui atque, itaque provident culpa necessitatibus quis voluptatum! Laudantium aspernatur, nemo nulla sint perspiciatis ad mollitia. Minus.
-            </ModalBody>
-            <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={onClose}>
-                Close
-              </Button>
-              <Button variant='ghost'>Secondary Action</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+        <TableContainer>
+          <Table size='sm'>
+            <Thead>
+              <Tr>
+                <Th>Active Poll:</Th>
+                <Th>{poll.prompt}</Th>
+                <Th>{poll.timer.timer}</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {poll.options.map(o => 
+                <Tr key={o.text}>
+                <Td>{o.text}</Td>
+                <Progress value={getPercent(o, conversation)} />
+                <Td>{getVoters(o)}</Td>
+              </Tr>
+              )
+              }
+            </Tbody>
+          </Table>
+        </TableContainer>
       </>
     )
   }

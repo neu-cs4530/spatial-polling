@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { customAlphabet, nanoid } from 'nanoid';
-import { BoundingBox, ServerConversationArea, ServerConversationAreaPoll } from '../client/TownsServiceClient';
+import { BoundingBox, ServerConversationArea, ServerConversationAreaPoll, ServerPollOption } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
@@ -154,22 +154,33 @@ export default class CoveyTownController {
       }
     }
 
-    // Store the PollOption this Player is standing on now (undefined if none exists).
-    const pollOption = conversation?.activePoll?.options.find(option => player.isWithin(option.location));
-    // Store the PollOption this Player supported before the last move (or undefined if none existed).
-    const prevPollOption = prevConversation?.activePoll?.options.find(option => option.voters.includes(player.id));
+    // handle spatial polling movement
+    if (conversation?.activePoll) {
+      conversation.activePoll.options.forEach(option => {
+        console.log(`${option.text } has voters: ${ option.voters}`);
+      });
+      
+      // Store the PollOption this Player is standing on now (undefined if none exists).
+      const pollOption : ServerPollOption | undefined = conversation?.activePoll?.options.find(option => player.isWithin(option.location));
 
-    // Only update voter rolls if the Player isn't in the same PollOption.
-    if (pollOption !== prevPollOption) {
-      // Remove them from the previous PollOption (if any).
-      if (prevPollOption) {
-        const oldIndex = prevPollOption.voters.findIndex(v => v === player.id);
-        prevPollOption.voters.splice(oldIndex);
-      }
+      // Store the PollOption this Player supported before the last move (or undefined if none existed).
+      const prevPollOption : ServerPollOption | undefined = prevConversation?.activePoll?.options.find(option => option.voters?.includes(player.id));
 
-      // Add them to the new PollOption (if any).
-      if (pollOption) {
-        pollOption.voters.push(player.id);
+      // Only update voter rolls if the Player isn't in the same PollOption.
+      if (pollOption !== prevPollOption) {
+
+        // Remove them from the previous PollOption (if any).
+        if (prevPollOption) {
+          const oldIndex = prevPollOption.voters.findIndex(v => v === player.id);
+          prevPollOption.voters.splice(oldIndex);
+        }
+
+        // Add them to the new PollOption (if any).
+        if (pollOption) {
+          const arr = pollOption.voters ? pollOption.voters : [];
+          arr.push(player.id);
+          pollOption.voters = arr;
+        }
       }
     }
 

@@ -67,7 +67,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   private setNewConversationAreaPoll: (newPoll: boolean) => void;
 
-  private setActiveConversationAreaPoll: (activePoll: boolean) => void;
+  private setNewPoll: (poll: ConversationAreaPoll) => void;
 
 
   private _onGameReadyListeners: Callback[] = [];
@@ -77,7 +77,7 @@ class CoveyGameScene extends Phaser.Scene {
     emitMovement: (loc: UserLocation) => void,
     setNewConversation: (conv: ConversationArea) => void,
     setNewConversationAreaPoll: (newPoll: boolean) => void,
-    setActiveConversationAreaPoll: (newPoll: boolean) => void,
+    setNewPoll: (poll: ConversationAreaPoll) => void,
     myPlayerID: string,
   ) {
     super('PlayGame');
@@ -86,7 +86,7 @@ class CoveyGameScene extends Phaser.Scene {
     this.myPlayerID = myPlayerID;
     this.setNewConversation = setNewConversation;
     this.setNewConversationAreaPoll = setNewConversationAreaPoll;
-    this.setActiveConversationAreaPoll = setActiveConversationAreaPoll;
+    this.setNewPoll = setNewPoll;
   }
 
   preload() {
@@ -147,11 +147,9 @@ class CoveyGameScene extends Phaser.Scene {
         const pollListener = { 
           onActivePollChange: (newPoll: ConversationAreaPoll | undefined) => {
             if (newPoll) {
-              // show active poll view
-              // existingArea.pollText.text = newPoll.prompt;
+              this.setNewPoll(newPoll);
             } else {
-              // show expired poll view
-              // existingArea.pollText.text = '';
+              // TODO
             }
           }
         };
@@ -567,10 +565,8 @@ class CoveyGameScene extends Phaser.Scene {
           // only show instructions to create a poll and listen for shift if no current active poll
           if (conv.conversationArea.activePoll) {
             this.pollTextBox?.setVisible(false);
-            this.setActiveConversationAreaPoll(true);
           } else {
             this.pollTextBox?.setVisible(true);
-            this.setActiveConversationAreaPoll(false);
             if (cursorKeys.shift.isDown) {         
               this.setNewConversationAreaPoll(true);
             }
@@ -713,6 +709,10 @@ class CoveyGameScene extends Phaser.Scene {
     return this.currentConversationArea?.conversationArea;
   }
 
+  get currPoll() {
+    return this.currentConversationArea?.conversationArea?.activePoll;
+  }
+
   get currPlayerID() {
     return this.myPlayerID;
   }
@@ -725,7 +725,7 @@ export default function WorldMap(): JSX.Element {
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   const [newConversation, setNewConversation] = useState<ConversationArea>();
   const [newConversationAreaPoll, setNewConversationAreaPoll] = useState<boolean>();
-  const [activeConversationAreaPoll, setActiveConversationAreaPoll] = useState<boolean>();
+  const [newPoll, setNewPoll] = useState<ConversationAreaPoll>();
   const playerMovementCallbacks = usePlayerMovement();
   const players = usePlayersInTown();
 
@@ -750,7 +750,7 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement, setNewConversation, setNewConversationAreaPoll, setActiveConversationAreaPoll, myPlayerID);
+      const newGameScene = new CoveyGameScene(video, emitMovement, setNewConversation, setNewConversationAreaPoll, setNewPoll, myPlayerID);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
       video.pauseGame = () => {
@@ -780,13 +780,11 @@ export default function WorldMap(): JSX.Element {
   }, [gameScene, players]);
 
   useEffect(() => {
-    console.log('triggered conversationAreas useEffect');
     gameScene?.updateConversationAreas(conversationAreas);
   }, [conversationAreas, gameScene]);
 
   const newConversationModalOpen = newConversation !== undefined;
-  const newConversationPollModalOpen = newConversationAreaPoll; // !== undefined;
-  // const activeConversationButtonVisible = activeConversationAreaPoll; // !== undefined;
+  const newConversationPollModalOpen = newConversationAreaPoll;
   useEffect(() => {
     if (newConversationModalOpen || newConversationPollModalOpen) { // pause the game when either modal is open
       video?.pauseGame();
@@ -831,18 +829,16 @@ export default function WorldMap(): JSX.Element {
   }, [gameScene?.currCA, gameScene?.currPlayerID, newConversationAreaPoll, video]);
 
   const activePollView = useMemo(() => {
-    if (gameScene?.currCA?.activePoll && activeConversationAreaPoll) {
-      // console.log('theres an active poll:');
-      // console.log(gameScene?.currCA?.activePoll);
+    if (gameScene?.currCA && gameScene?.currPoll && newPoll) {
       return (
         <ActiveConversationPollModal 
           conversation={gameScene?.currCA}
-          poll={gameScene?.currCA?.activePoll}
+          poll={newPoll}
         />
       );
     }
     return <></>;
-  }, [activeConversationAreaPoll, gameScene?.currCA]);
+  }, [gameScene?.currCA, gameScene?.currPoll, newPoll]);
 
   return (
     <div id='app-container'>

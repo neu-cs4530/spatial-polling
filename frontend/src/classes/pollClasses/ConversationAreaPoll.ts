@@ -26,11 +26,9 @@ export type ServerConversationAreaPoll = {
 
   // can't have more options than tiles
   if (options.length <= tiles.length) {
-    // assign each option to random tile of conversation
-    options.forEach((o) => {
-      const randomIndex = Math.floor(Math.random() * tiles.length);
-      pollOptions.push(new PollOption(o, tiles[randomIndex]));
-      tiles.splice(randomIndex, 1);
+    // assign each option to a tile of conversation
+    options.forEach((o, i) => {
+      pollOptions.push(new PollOption(o, tiles[i]));
     });
   }
   return pollOptions;

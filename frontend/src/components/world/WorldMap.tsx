@@ -834,11 +834,12 @@ export default function WorldMap(): JSX.Element {
         <ActiveConversationPollModal 
           conversation={gameScene?.currCA}
           poll={newPoll}
+          players={players}
         />
       );
     }
     return <></>;
-  }, [gameScene?.currCA, gameScene?.currPoll, newPoll]);
+  }, [gameScene?.currCA, gameScene?.currPoll, newPoll, players]);
 
   return (
     <div id='app-container'>

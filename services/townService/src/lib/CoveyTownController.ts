@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { customAlphabet, nanoid } from 'nanoid';
-import { BoundingBox, ServerConversationArea, ServerConversationAreaPoll } from '../client/TownsServiceClient';
+import { BoundingBox, ServerConversationArea, ServerConversationAreaPoll, ServerPollOption } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
@@ -154,22 +154,30 @@ export default class CoveyTownController {
       }
     }
 
-    // Store the PollOption this Player is standing on now (undefined if none exists).
-    const pollOption = conversation?.activePoll?.options.find(option => player.isWithin(option.location));
-    // Store the PollOption this Player supported before the last move (or undefined if none existed).
-    const prevPollOption = prevConversation?.activePoll?.options.find(option => option.voters.includes(player.id));
+    // handle spatial polling movement
+    if (conversation?.activePoll) {
+      
+      // Store the PollOption this Player is standing on now (undefined if none exists).
+      const pollOption : ServerPollOption | undefined = conversation?.activePoll?.options.find(option => player.isWithin(option.location));
 
-    // Only update voter rolls if the Player isn't in the same PollOption.
-    if (pollOption !== prevPollOption) {
-      // Remove them from the previous PollOption (if any).
-      if (prevPollOption) {
-        const oldIndex = prevPollOption.voters.findIndex(v => v === player.id);
-        prevPollOption.voters.splice(oldIndex);
-      }
+      // Store the PollOption this Player supported before the last move (or undefined if none existed).
+      const prevPollOption : ServerPollOption | undefined = prevConversation?.activePoll?.options.find(option => option.voters?.includes(player.id));
 
-      // Add them to the new PollOption (if any).
-      if (pollOption) {
-        pollOption.voters.push(player.id);
+      // Only update voter rolls if the Player isn't in the same PollOption.
+      if (pollOption !== prevPollOption) {
+
+        // Remove them from the previous PollOption (if any).
+        if (prevPollOption) {
+          const oldIndex = prevPollOption.voters.findIndex(v => v === player.id);
+          prevPollOption.voters.splice(oldIndex);
+          this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
+        }
+
+        // Add them to the new PollOption (if any).
+        if (pollOption) {
+          pollOption.voters.push(player.id);
+          this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
+        }
       }
     }
 
@@ -249,12 +257,17 @@ export default class CoveyTownController {
     }    
 
     const newPoll : ServerConversationAreaPoll = Object.assign(_poll);
+
+    // add people standing in the conversation to voter arrays
+    const playersInConversation = this.players.filter(player => player.isWithin(conversation.boundingBox));
+    newPoll.options.forEach(option => {
+      const playersInQuadrant = playersInConversation.filter(p => p.isWithin(option.location));
+      option.voters = playersInQuadrant.map(player => player.id);
+    });
+
     conversation.activePoll = newPoll;
     // Notify other players that there is a new poll
     this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
-
-    // console.log(`\nthe new active poll of ${  ca.label  } is`);
-    // console.log(ca.activePoll);
     return true;
   }
 

@@ -63,7 +63,6 @@ export default class ConversationArea {
 
   set topic(newTopic: string | undefined) {
     if(this._topic !== newTopic){
-      console.log('calling onTopicChange for each listener...')
       this._listeners.forEach(listener => listener.onTopicChange?.(newTopic));
     }
     this._topic = newTopic;

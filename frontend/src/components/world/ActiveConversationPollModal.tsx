@@ -39,7 +39,17 @@ import PollOption from '../../classes/pollClasses/PollOption';
 export default function ActiveConversationPollModal( {poll, conversation} : ActiveConversationPollModalProps ) {
      
   
+  // get the user names of the voters who voted from this option
   function getVoters(o: PollOption) {
+    // const userNamesOfVoters = [];
+    // const localPlayers = [];
+    // conversation.occupants.forEach(element => {
+    //   localPlayers.push(p => p)
+    // });
+    
+    // o.voters.forEach(voterID => {
+      
+    // });
     return o.voters.toString();
   }
 
@@ -53,11 +63,18 @@ export default function ActiveConversationPollModal( {poll, conversation} : Acti
       <>
         <TableContainer>
           <Table size='sm'>
-            <Thead>
+          <Thead>
               <Tr>
                 <Th>Active Poll:</Th>
                 <Th>{poll.prompt}</Th>
-                <Th>{poll.timer.timer}</Th>
+                <Th />
+              </Tr>
+            </Thead>
+            <Thead>
+              <Tr>
+                <Th />
+                <Th>Votes</Th>
+                <Th>Voters</Th>
               </Tr>
             </Thead>
             <Tbody>

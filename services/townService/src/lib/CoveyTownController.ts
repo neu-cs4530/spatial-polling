@@ -156,9 +156,6 @@ export default class CoveyTownController {
 
     // handle spatial polling movement
     if (conversation?.activePoll) {
-      conversation.activePoll.options.forEach(option => {
-        console.log(`${option.text } has voters: ${ option.voters}`);
-      });
       
       // Store the PollOption this Player is standing on now (undefined if none exists).
       const pollOption : ServerPollOption | undefined = conversation?.activePoll?.options.find(option => player.isWithin(option.location));
@@ -173,13 +170,13 @@ export default class CoveyTownController {
         if (prevPollOption) {
           const oldIndex = prevPollOption.voters.findIndex(v => v === player.id);
           prevPollOption.voters.splice(oldIndex);
+          this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
         }
 
         // Add them to the new PollOption (if any).
         if (pollOption) {
-          const arr = pollOption.voters ? pollOption.voters : [];
-          arr.push(player.id);
-          pollOption.voters = arr;
+          pollOption.voters.push(player.id);
+          this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
         }
       }
     }
@@ -260,12 +257,17 @@ export default class CoveyTownController {
     }    
 
     const newPoll : ServerConversationAreaPoll = Object.assign(_poll);
+
+    // add people standing in the conversation to voter arrays
+    const playersInConversation = this.players.filter(player => player.isWithin(conversation.boundingBox));
+    newPoll.options.forEach(option => {
+      const playersInQuadrant = playersInConversation.filter(p => p.isWithin(option.location));
+      option.voters = playersInQuadrant.map(player => player.id);
+    });
+
     conversation.activePoll = newPoll;
     // Notify other players that there is a new poll
     this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
-
-    // console.log(`\nthe new active poll of ${  ca.label  } is`);
-    // console.log(ca.activePoll);
     return true;
   }
 

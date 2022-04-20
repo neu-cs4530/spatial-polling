@@ -1,17 +1,21 @@
 import BoundingBox from "../BoundingBox";
 
-// TODO
 export type ServerPollOption = {
     location: BoundingBox;
     text: string;
     voters: string[];
   };
 
+//   export type PollOptionListener = {
+//     onVotersChange?: (newVoters: string[]) => void;
+//   };
+
 /** A PollOption class which defines the state of one poll choice and manages changes
  * to the state as users move in and out of this poll option's location.
  */
 
  export default class PollOption {
+    // private _listeners: PollOptionListener[] = [];
 
      /** location of the poll * */ 
     public readonly location: BoundingBox;
@@ -20,29 +24,23 @@ export type ServerPollOption = {
     public readonly text: string;
 
      /** list of players who voted for this option * */
-    public voters: string[];
+    private _voters: string[] = [];
 
     constructor(text: string, location: BoundingBox) {
         this.location = location;
         this.text = text;
-        this.voters = [];
     }
 
-    /**
-     * Add a given voter to the list of voters.
-     * @param player 
-     */
-    addVoter(playerId: string): void {
-        this.voters.push(playerId);
+    get voters() {
+        return this._voters;
     }
 
-    /**
-    * Remove a given voter from the list of voters.
-    * @param player 
-    */
-    removeVoter(playerId: string): void {
-        this.voters.splice(this.voters.findIndex(p => playerId === p));
-    }
+    set voters(newVoters: string[]) {
+        if (newVoters.length !== this._voters.length || !newVoters.every((val, index) => val === this._voters[index])){
+          // this._listeners.forEach(listener => listener.onVotersChange?.(newVoters));
+          this._voters = newVoters;
+        }
+      }
 
     toServerPollOption(): ServerPollOption {
         return {

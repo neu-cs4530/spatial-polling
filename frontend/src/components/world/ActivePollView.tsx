@@ -15,19 +15,29 @@ export type PollViewProps = {
 
 const colorsArray: string[] = ['red', 'blue', 'green', 'yellow']
 
-export function listOptions(apvProps: PollViewProps): JSX.Element[] {
+export function listOptions(pvProps: PollViewProps): JSX.Element[] {
     var optionsList: JSX.Element[] = [];
-    apvProps.poll!.options.forEach((option, index) => {
+    pvProps.poll!.options.forEach((option, index) => {
         optionsList.push(<li id={index.toString()}><span style={{color: colorsArray[index]}}>■</span> {option}</li>)
     })
     return optionsList;
 }
 
-export default function ActivePollView(apvProps: PollViewProps): JSX.Element {
+export function parseTime(time: number): string {
+    let minute = Math.trunc(time / 60).toString();
+    let second = time % 60;
+    if (second > 9) {
+        return minute + ":" + second.toString();
+    } else {
+        return minute + ":0" + second.toString();
+    }
+}
+
+export default function ActivePollView(pvProps: PollViewProps): JSX.Element {
     const video = useMaybeVideo();
-    if (!apvProps.poll) {
+    if (!pvProps.poll) {
         return (
-        <Modal isOpen={apvProps.isOpen} onClose={()=>{apvProps.closeModal(); video?.unPauseGame;}}>
+        <Modal isOpen={pvProps.isOpen} onClose={()=>{pvProps.closeModal(); video?.unPauseGame;}}>
             <ModalCloseButton/>
             <ModalBody>
                 <text>There is no active poll at this time. Press 'Shift' to start one!</text>
@@ -35,12 +45,12 @@ export default function ActivePollView(apvProps: PollViewProps): JSX.Element {
         </Modal>
         )
     }
-    else if (apvProps.poll.timer.duration === 0) {
-        return ExpiredPollView(apvProps);
+    else if (pvProps.poll.timer.duration === 0) {
+        return ExpiredPollView(pvProps);
     }
-    else if (apvProps.player.id === apvProps.poll.creatorID) {
-        return ActivePollViewCreator(apvProps);
+    else if (pvProps.player.id === pvProps.poll.creatorID) {
+        return ActivePollViewCreator(pvProps);
     } else {
-        return ActivePollViewVoter(apvProps);
+        return ActivePollViewVoter(pvProps);
     }
 }

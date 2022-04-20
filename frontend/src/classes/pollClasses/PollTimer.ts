@@ -10,7 +10,6 @@ export type ServerPollTimer = {
   };
 
 export default class PollTimer {
-  maxTime: number;
 
   duration: number;
 
@@ -19,7 +18,6 @@ export default class PollTimer {
   isPaused: boolean;
 
   constructor (duration: number) {
-      this.maxTime = duration;
       this.duration = duration;
       this.isPaused = false;
   }
@@ -45,8 +43,9 @@ export default class PollTimer {
    * @param seconds 
    */
   addTime(seconds: number) {
-      this.duration += seconds;
-      this.maxTime += seconds;
+      // Cap time at 599 seconds (9 minutes 59 seconds)
+      // Let's not have some hooligan try to overflow the timer
+      this.duration = Math.min(this.duration + seconds, 599);
   }
 
   /**

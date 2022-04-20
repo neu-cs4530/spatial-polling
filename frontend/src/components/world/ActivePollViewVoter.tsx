@@ -2,10 +2,10 @@ import { Modal, ModalBody, ModalCloseButton, ModalHeader, ModalOverlay } from "@
 import useMaybeVideo from "../../hooks/useMaybeVideo";
 import { PollViewProps, listOptions } from "./ActivePollView";
 
-export default function ActivePollViewVoter(apvProps: PollViewProps) {
+export default function ActivePollViewVoter(pvProps: PollViewProps) {
     const video = useMaybeVideo()
     return (
-        <Modal isOpen={apvProps.isOpen} onClose={()=>{apvProps.closeModal(); video?.unPauseGame;}}>
+        <Modal isOpen={pvProps.isOpen} onClose={()=>{pvProps.closeModal(); video?.unPauseGame;}}>
             <ModalOverlay/>
             <ModalHeader>
                 <text>
@@ -14,13 +14,13 @@ export default function ActivePollViewVoter(apvProps: PollViewProps) {
             </ModalHeader>
             <ModalBody pb={6}>
                 <text>
-                    <b>Prompt:</b> {apvProps.poll!.prompt}
+                    <b>Prompt:</b> {pvProps.poll!.prompt}
                 </text>
                 <text>
                     <b>Poll Options:</b>
                 </text>
                 <ul>
-                    {listOptions(apvProps)}
+                    {listOptions(pvProps)}
                 </ul>
             </ModalBody>
             <ModalCloseButton/>

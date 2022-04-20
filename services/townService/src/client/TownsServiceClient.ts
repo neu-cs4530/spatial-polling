@@ -1,19 +1,18 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import assert from 'assert';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { UserLocation } from '../CoveyTypes';
 
-
-export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
+export type ServerPlayer = { _id: string; _userName: string; location: UserLocation };
 
 /**
  * A bounding box, with a coordinate system that matches the frontend game engine's coordinates
- * The x,y position specifies the center of the box (NOT a corner). 
+ * The x,y position specifies the center of the box (NOT a corner).
  */
 export type BoundingBox = {
-  x: number,
-  y: number,
-  width: number,
-  height: number,
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 };
 
 // TODO
@@ -25,6 +24,7 @@ export type ServerPollOption = {
 
 // TODO
 export type ServerPollTimer = {
+  duration: number;
 };
 
 export type ServerConversationAreaPoll = {
@@ -46,7 +46,7 @@ export type ServerConversationArea = {
  * A bounding box with its location also stored as corner coordinates
  */
 export type GridSquare = BoundingBox & {
-  box: { x1: number, y1: number, x2: number, y2: number };
+  box: { x1: number; y1: number; x2: number; y2: number };
 };
 
 /**
@@ -157,7 +157,7 @@ export type CoveyTownInfo = {
   friendlyName: string;
   coveyTownID: string;
   currentOccupancy: number;
-  maximumOccupancy: number
+  maximumOccupancy: number;
 };
 
 export default class TownsServiceClient {

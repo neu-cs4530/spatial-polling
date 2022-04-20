@@ -6,16 +6,12 @@ export type ServerPollOption = {
     voters: string[];
   };
 
-//   export type PollOptionListener = {
-//     onVotersChange?: (newVoters: string[]) => void;
-//   };
 
 /** A PollOption class which defines the state of one poll choice and manages changes
  * to the state as users move in and out of this poll option's location.
  */
 
  export default class PollOption {
-    // private _listeners: PollOptionListener[] = [];
 
      /** location of the poll * */ 
     public readonly location: BoundingBox;
@@ -36,11 +32,10 @@ export type ServerPollOption = {
     }
 
     set voters(newVoters: string[]) {
-        if (newVoters.length !== this._voters.length || !newVoters.every((val, index) => val === this._voters[index])){
-          // this._listeners.forEach(listener => listener.onVotersChange?.(newVoters));
-          this._voters = newVoters;
-        }
+      if (newVoters.length !== this._voters.length || !newVoters.every((val, index) => val === this._voters[index])){
+        this._voters = newVoters;
       }
+    }
 
     toServerPollOption(): ServerPollOption {
         return {

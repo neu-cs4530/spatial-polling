@@ -1,7 +1,5 @@
 // TODO
 export type ServerPollTimer = {
-    maxTime: number;
-  
     duration: number;
   
     timer: ReturnType<typeof setInterval> | undefined;
@@ -10,7 +8,6 @@ export type ServerPollTimer = {
   };
 
 export default class PollTimer {
-
   duration: number;
 
   timer: ReturnType<typeof setInterval> | undefined;

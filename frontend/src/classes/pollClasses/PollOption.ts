@@ -14,26 +14,18 @@ export type ServerPollOption = {
  export default class PollOption {
 
      /** location of the poll * */ 
-    public location: BoundingBox;
+    public readonly location: BoundingBox;
 
      /** title of the poll * */
-    private readonly _text: string;
+    public readonly text: string;
 
      /** list of players who voted for this option * */
-    private _voters: string[];
+    public voters: string[];
 
     constructor(text: string, location: BoundingBox) {
         this.location = location;
-        this._text = text;
-        this._voters = [];
-    }
-
-    get voters(): string[] {
-        return this._voters ;
-    }
-
-    get text(): string {
-        return this._text;
+        this.text = text;
+        this.voters = [];
     }
 
     /**
@@ -41,7 +33,7 @@ export type ServerPollOption = {
      * @param player 
      */
     addVoter(playerId: string): void {
-        this._voters.push(playerId);
+        this.voters.push(playerId);
     }
 
     /**
@@ -49,14 +41,14 @@ export type ServerPollOption = {
     * @param player 
     */
     removeVoter(playerId: string): void {
-        this._voters.splice(this._voters.findIndex(p => playerId === p), 1);
+        this.voters.splice(this.voters.findIndex(p => playerId === p));
     }
 
     toServerPollOption(): ServerPollOption {
         return {
             location: this.location,
-            text: this._text,
-            voters: this._voters,
+            text: this.text,
+            voters: this.voters,
         };
       }
 }

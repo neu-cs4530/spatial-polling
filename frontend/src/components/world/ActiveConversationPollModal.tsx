@@ -81,7 +81,7 @@ export default function ActiveConversationPollModal( {poll, conversation} : Acti
               {poll.options.map(o => 
                 <Tr key={o.text}>
                 <Td>{o.text}</Td>
-                <Progress value={getPercent(o, conversation)} />
+                <Td>{o.voters?.length}<Progress value={getPercent(o, conversation)} /></Td>
                 <Td>{getVoters(o)}</Td>
               </Tr>
               )

@@ -123,6 +123,9 @@ export default class CoveyTownController {
     this._listeners.forEach(listener => listener.onPlayerDisconnected(session.player));
     const conversation = session.player.activeConversationArea;
     if (conversation) {
+      if (conversation.activePoll) {
+        conversation.activePoll.options.forEach(o => {o.voters.filter(v => {v !== session.player.id})});
+      }
       this.removePlayerFromConversationArea(session.player, conversation);
     }
   }

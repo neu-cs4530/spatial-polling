@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Progress,
   Table,
@@ -21,9 +21,23 @@ import {
       players: Player[];
   }
 
+function parseTime(time: number): string {
+    const minute = Math.trunc(time / 60).toString();
+    const second = time % 60;
+    if (second > 9) {
+        return `${minute}:${second.toString()}`;
+    }
+    
+    return `${minute}:0${second.toString()}`;
+}
+
 export default function ActiveConversationPollModal( {poll, conversation, players} : ActiveConversationPollModalProps ) {
      
-  
+  const colors = ['#C88A88', '#AACDE9','#81B7BA','#A89BCA'];
+  const [time, checkTime] = useState(poll.timer.duration);
+  // PollTimer tracks time of poll, second timer with shorter cooldown ensures modal timer is up to date
+  const timerCheck = setInterval(() => {checkTime(poll.timer.duration)}, 100);
+
   // get the user names of the voters who voted from this option
   function getVoters(o: PollOption) {
     const voterNames: string[] = [];    
@@ -37,7 +51,7 @@ export default function ActiveConversationPollModal( {poll, conversation, player
   }
 
   function getPercent(o: PollOption, c: ConversationArea) {
-    return (o.voters?.length / c.occupants?.length) * 100;
+    return (o.voters.length / c.occupants?.length) * 100;
   }
 
   return (
@@ -48,7 +62,7 @@ export default function ActiveConversationPollModal( {poll, conversation, player
               <Tr>
                 <Th>Active Poll:</Th>
                 <Th>{poll.prompt}</Th>
-                <Th />
+                <Th>{parseTime(time)}</Th>
               </Tr>
             </Thead>
             <Thead>
@@ -61,8 +75,8 @@ export default function ActiveConversationPollModal( {poll, conversation, player
             <Tbody>
               {poll.options.map(o => 
                 <Tr key={o.text}>
-                <Td>{o.text}</Td>
-                <Td>{o.voters?.length}<Progress value={getPercent(o, conversation)} /></Td>
+                <Td><text style={{color: colors[poll.options.indexOf(o)]}}>■</text> {o.text}</Td>
+                <Td>{o.voters.length}<Progress style={{color: colors[poll.options.indexOf(o)]}} value={getPercent(o, conversation)} /></Td>
                 <Td>{getVoters(o)}</Td>
               </Tr>
               )

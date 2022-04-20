@@ -847,7 +847,6 @@ export default function WorldMap(): JSX.Element {
       {newPollModal}
       <div id='map-container' />
       <div id='social-container'>
-        <SocialSidebar />
         {activePollView}
       </div>
     </div>

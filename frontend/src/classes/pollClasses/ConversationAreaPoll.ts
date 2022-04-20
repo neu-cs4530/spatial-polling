@@ -21,7 +21,7 @@ export type ServerConversationAreaPoll = {
  * @returns a list of PollOption objects
  */
  function assignOptionsToTiles(boundingBox: BoundingBox, options: string[]): PollOption[] {
-  const tiles: BoundingBox[] = boundingBox.getTiles();
+  const tiles: BoundingBox[] = boundingBox.getQuadrants();
   const pollOptions: PollOption[] = [];
 
   // can't have more options than tiles

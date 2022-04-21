@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Progress,
   Table,
@@ -19,25 +19,23 @@ import {
       poll: ConversationAreaPoll;
       conversation: ConversationArea;
       players: Player[];
-      timer: number | undefined;
   }
 
-function parseTime(time: number): string {
+function parseTime(time: number | undefined): string {
+  if (time) {
     const minute = Math.trunc(time / 60).toString();
     const second = time % 60;
     if (second > 9) {
         return `${minute}:${second.toString()}`;
     }
-    
     return `${minute}:0${second.toString()}`;
+  }
+  return '';
 }
 
-export default function ActiveConversationPollModal( {poll, conversation, players, timer} : ActiveConversationPollModalProps ) {
+export default function ActiveConversationPollModal( {poll, conversation, players} : ActiveConversationPollModalProps ) {
      
-  const colors = ['#C88A88', '#AACDE9','#81B7BA','#A89BCA'];
-  // const [time, checkTime] = useState(poll.timer.duration);
-  // PollTimer tracks time of poll, second timer with shorter cooldown ensures modal timer is up to date
-  // setInterval(() => {checkTime(poll.timer.duration)}, 60);
+  const colors = ['#C88A88', '#AACDE9','#A89BCA','#81B7BA'];
 
   // get the user names of the voters who voted from this option
   function getVoters(o: PollOption) {
@@ -61,9 +59,9 @@ export default function ActiveConversationPollModal( {poll, conversation, player
           <Table size='sm'>
           <Thead>
               <Tr>
-                <Th>Active Poll:</Th>
+                <Th>{!poll.expired ? 'Move to vote for poll:' : 'Results of poll:'}</Th>
                 <Th>{poll.prompt}</Th>
-                <Th>{parseTime(timer!)}</Th>
+                <Th>{parseTime(poll.timer.duration)}</Th>
               </Tr>
             </Thead>
             <Thead>

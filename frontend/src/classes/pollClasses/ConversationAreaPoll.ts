@@ -8,6 +8,7 @@ export type ServerConversationAreaPoll = {
   prompt: string;
   options: ServerPollOption[];
   timer: ServerPollTimer;
+  expired: boolean;
 };
 
 /** 
@@ -46,6 +47,8 @@ export default class ConversationAreaPoll {
 
   public timer: PollTimer;
 
+  public expired: boolean;
+
   /** The unique identifier for this poll * */
   private readonly _id: string;
 
@@ -62,8 +65,7 @@ export default class ConversationAreaPoll {
     this.creatorID = creatorID;
     this.timer = new PollTimer(duration);
     this._id = nanoid();
-
-    this.timer.startTimer();
+    this.expired = false;
 
     if (!assignOptionsToTiles(boundingBox, options).length) {
       throw new Error('error: more poll options than tiles');
@@ -78,11 +80,13 @@ export default class ConversationAreaPoll {
   }
 
   toServerConversationAreaPoll(): ServerConversationAreaPoll {
+    const serverPollOps = this.options.map(o => o.toServerPollOption());
     return {
       creator: this.creatorID,
       prompt: this.prompt,
-      options: this.options,
-      timer: this.timer,
+      options: serverPollOps,
+      timer: this.timer.toServerPollTimer(),
+      expired: this.expired,
     };
   }
 }

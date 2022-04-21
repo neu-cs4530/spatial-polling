@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { customAlphabet, nanoid } from 'nanoid';
 import { BoundingBox, ServerConversationArea, ServerConversationAreaPoll, ServerPollOption } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';
@@ -158,7 +157,7 @@ export default class CoveyTownController {
     }
 
     // handle spatial polling movement
-    if (conversation?.activePoll) {
+    if (conversation?.activePoll && !conversation?.activePoll.expired) {
       
       // Store the PollOption this Player is standing on now (undefined if none exists).
       const pollOption : ServerPollOption | undefined = conversation?.activePoll?.options.find(option => player.isWithin(option.location));
@@ -254,8 +253,8 @@ export default class CoveyTownController {
   addConversationAreaPoll(_conversationArea: ServerConversationArea, _poll: ServerConversationAreaPoll): boolean {
     const conversation = this.conversationAreas.find(conv => conv.label === _conversationArea.label);
 
-    // if the given conversation doesnt exist or already has a poll
-    if (!conversation || conversation.activePoll) {
+    // if the given conversation doesnt exist or already has a poll thats not expired
+    if (!conversation || (conversation.activePoll && !conversation.activePoll.expired)) {
       return false;
     }    
 
@@ -268,10 +267,33 @@ export default class CoveyTownController {
       option.voters = playersInQuadrant.map(player => player.id);
     });
 
+    this.startPollTimer(conversation, newPoll);
     conversation.activePoll = newPoll;
     // Notify other players that there is a new poll
-    this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));
+    this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));      
     return true;
+  }
+
+  /**
+   * Starts the timer for the given active poll using setInterval. Stops the timer once the duration hits zero.
+   * 
+   * @param conversation 
+   * @param newPoll 
+   */
+  startPollTimer(conversation: ServerConversationArea, newPoll: ServerConversationAreaPoll) : void {
+    // console.log(`starting timer for: ${newPoll.timer.duration}s`);
+    const t = newPoll.timer;
+    const runningTimer = setInterval(() => {
+      if (t.duration === 0) {
+        // console.log('poll expired');
+        newPoll.expired = true;
+        clearInterval(runningTimer);
+      } else {
+        // console.log(`decremented dur: ${t.duration}`);
+        t.duration -= 1;  
+      }
+      this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));   
+    }, 1000);
   }
 
   /**

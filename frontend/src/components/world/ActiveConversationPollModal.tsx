@@ -13,8 +13,8 @@ import {
   import Player from '../../classes/Player';
   import ConversationAreaPoll from '../../classes/pollClasses/ConversationAreaPoll';
   import PollOption from '../../classes/pollClasses/PollOption';
-  
-  
+  import './styles.scss'
+
   type ActiveConversationPollModalProps = {
       poll: ConversationAreaPoll;
       conversation: ConversationArea;
@@ -75,7 +75,7 @@ export default function ActiveConversationPollModal( {poll, conversation, player
               {poll.options.map(o => 
                 <Tr key={o.text}>
                 <Td><text style={{color: colors[poll.options.indexOf(o)]}}>■</text> {o.text}</Td>
-                <Td>{o.voters.length}<Progress style={{color: colors[poll.options.indexOf(o)]}} value={getPercent(o, conversation)} /></Td>
+                <Td>{o.voters.length}<Progress className={`quadrant${poll.options.indexOf(o)}`} value={getPercent(o, conversation)} /></Td>
                 <Td>{getVoters(o)}</Td>
               </Tr>
               )
@@ -86,5 +86,5 @@ export default function ActiveConversationPollModal( {poll, conversation, player
       </>
     )
   }
-  
+
   

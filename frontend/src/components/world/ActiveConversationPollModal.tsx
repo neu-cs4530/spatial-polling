@@ -19,6 +19,7 @@ import {
       poll: ConversationAreaPoll;
       conversation: ConversationArea;
       players: Player[];
+      timer: number | undefined;
   }
 
 function parseTime(time: number): string {
@@ -31,12 +32,12 @@ function parseTime(time: number): string {
     return `${minute}:0${second.toString()}`;
 }
 
-export default function ActiveConversationPollModal( {poll, conversation, players} : ActiveConversationPollModalProps ) {
+export default function ActiveConversationPollModal( {poll, conversation, players, timer} : ActiveConversationPollModalProps ) {
      
   const colors = ['#C88A88', '#AACDE9','#81B7BA','#A89BCA'];
-  const [time, checkTime] = useState(poll.timer.duration);
+  // const [time, checkTime] = useState(poll.timer.duration);
   // PollTimer tracks time of poll, second timer with shorter cooldown ensures modal timer is up to date
-  const timerCheck = setInterval(() => {checkTime(poll.timer.duration)}, 100);
+  // setInterval(() => {checkTime(poll.timer.duration)}, 60);
 
   // get the user names of the voters who voted from this option
   function getVoters(o: PollOption) {
@@ -62,7 +63,7 @@ export default function ActiveConversationPollModal( {poll, conversation, player
               <Tr>
                 <Th>Active Poll:</Th>
                 <Th>{poll.prompt}</Th>
-                <Th>{parseTime(time)}</Th>
+                <Th>{parseTime(timer!)}</Th>
               </Tr>
             </Thead>
             <Thead>

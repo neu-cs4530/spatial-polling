@@ -31,6 +31,7 @@ export default class PollTimer {
   startTimer() {
       this.timer = setInterval(() => {
           if (!this.isPaused) {
+              console.log('duration decremented');
               this.duration -= 1;
           }
           if (this.duration === 0 && this.timer) {

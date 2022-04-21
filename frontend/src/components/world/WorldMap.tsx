@@ -835,11 +835,12 @@ export default function WorldMap(): JSX.Element {
           conversation={gameScene?.currCA}
           poll={newPoll}
           players={players}
+          timer={gameScene?.currCA?.activePoll?.timer.duration}
         />
       );
     }
     return <></>;
-  }, [gameScene?.currCA, gameScene?.currPoll, newPoll, players]);
+  }, [gameScene?.currCA, gameScene?.currPoll, newPoll, players, gameScene?.currCA?.activePoll?.timer.duration]);
 
   return (
     <div id='app-container'>

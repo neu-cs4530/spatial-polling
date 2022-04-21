@@ -63,6 +63,8 @@ export default class ConversationAreaPoll {
     this.timer = new PollTimer(duration);
     this._id = nanoid();
 
+    this.timer.startTimer();
+
     if (!assignOptionsToTiles(boundingBox, options).length) {
       throw new Error('error: more poll options than tiles');
     } else {

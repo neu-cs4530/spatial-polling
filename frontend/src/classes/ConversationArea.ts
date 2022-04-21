@@ -40,7 +40,7 @@ export default class ConversationArea {
 
   set activePoll(newActivePoll: ConversationAreaPoll | undefined) {
     if(this._activePoll !== newActivePoll) {
-      console.log('calling onActivePollChange for each listener...')
+      // console.log('calling onActivePollChange for each listener...')
       this._listeners.forEach(listener => listener.onActivePollChange?.(newActivePoll));
     }
     this._activePoll = newActivePoll;

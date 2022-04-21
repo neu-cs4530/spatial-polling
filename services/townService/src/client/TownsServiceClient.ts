@@ -23,6 +23,7 @@ export type ServerPollOption = {
 
 export type ServerPollTimer = {
   duration: number;
+  timer: ReturnType<typeof setInterval> | undefined;
 };
 
 export type ServerConversationAreaPoll = {
@@ -30,6 +31,7 @@ export type ServerConversationAreaPoll = {
   prompt: string;
   options: ServerPollOption[];
   timer: ServerPollTimer;
+  expired: boolean;
 };
 
 export type ServerConversationArea = {

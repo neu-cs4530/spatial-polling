@@ -1,62 +1,56 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-console */
+import React from 'react';
 import {
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Progress,
   Table,
   TableContainer,
   Tbody,
   Td,
-  Tfoot,
   Th,
   Thead,
   Tr,
-  useDisclosure,
   } from '@chakra-ui/react';
-  import React,{ useCallback,useState } from 'react';
   import ConversationArea from '../../classes/ConversationArea';
+  import Player from '../../classes/Player';
   import ConversationAreaPoll from '../../classes/pollClasses/ConversationAreaPoll';
-import PollOption from '../../classes/pollClasses/PollOption';
-  import useCoveyAppState from '../../hooks/useCoveyAppState';
-  import useMaybeVideo from '../../hooks/useMaybeVideo';
-  
-  
+  import PollOption from '../../classes/pollClasses/PollOption';
+  import './styles.scss'
+
   type ActiveConversationPollModalProps = {
       poll: ConversationAreaPoll;
       conversation: ConversationArea;
+      players: Player[];
   }
 
-export default function ActiveConversationPollModal( {poll, conversation} : ActiveConversationPollModalProps ) {
+function parseTime(time: number | undefined): string {
+  if (time) {
+    const minute = Math.trunc(time / 60).toString();
+    const second = time % 60;
+    if (second > 9) {
+        return `${minute}:${second.toString()}`;
+    }
+    return `${minute}:0${second.toString()}`;
+  }
+  return '';
+}
+
+export default function ActiveConversationPollModal( {poll, conversation, players} : ActiveConversationPollModalProps ) {
      
-  
+  const colors = ['#C88A88', '#AACDE9','#A89BCA','#81B7BA'];
+
   // get the user names of the voters who voted from this option
   function getVoters(o: PollOption) {
-    // const userNamesOfVoters = [];
-    // const localPlayers = [];
-    // conversation.occupants.forEach(element => {
-    //   localPlayers.push(p => p)
-    // });
-    
-    // o.voters.forEach(voterID => {
-      
-    // });
-    return o.voters.toString();
+    const voterNames: string[] = [];    
+    o.voters.forEach(voterID => {
+      const playerName = players.find(p => p.id === voterID)?.userName;
+      if (playerName) {
+        voterNames.push(playerName);
+      }
+    });
+    return voterNames.join();
   }
 
   function getPercent(o: PollOption, c: ConversationArea) {
-    console.log(`o.voters?.length=${  o.voters?.length}`);
-    console.log(`conversation.occupants?.length=${  conversation.occupants?.length}`);
-    return (o.voters?.length / conversation.occupants?.length) * 100;
+    return (o.voters.length / c.occupants?.length) * 100;
   }
 
   return (
@@ -65,9 +59,9 @@ export default function ActiveConversationPollModal( {poll, conversation} : Acti
           <Table size='sm'>
           <Thead>
               <Tr>
-                <Th>Active Poll:</Th>
+                <Th>{!poll.expired ? 'Move to vote for poll:' : 'Results of poll:'}</Th>
                 <Th>{poll.prompt}</Th>
-                <Th />
+                <Th>{parseTime(poll.timer.duration)}</Th>
               </Tr>
             </Thead>
             <Thead>
@@ -80,8 +74,8 @@ export default function ActiveConversationPollModal( {poll, conversation} : Acti
             <Tbody>
               {poll.options.map(o => 
                 <Tr key={o.text}>
-                <Td>{o.text}</Td>
-                <Progress value={getPercent(o, conversation)} />
+                <Td><text style={{color: colors[poll.options.indexOf(o)]}}>■</text> {o.text}</Td>
+                <Td>{o.voters.length}<Progress className={`quadrant${poll.options.indexOf(o)}`} value={getPercent(o, conversation)} /></Td>
                 <Td>{getVoters(o)}</Td>
               </Tr>
               )
@@ -92,5 +86,5 @@ export default function ActiveConversationPollModal( {poll, conversation} : Acti
       </>
     )
   }
-  
+
   

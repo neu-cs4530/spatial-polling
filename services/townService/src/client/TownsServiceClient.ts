@@ -25,10 +25,11 @@ export type ServerPollOption = {
 };
 
 /**
- * A poll timer has a duration which keeps track of the current time left for some poll.
+ * A poll timer keeps track of the current time left for some poll.
  */
 export type ServerPollTimer = {
   duration: number;
+  timer: ReturnType<typeof setInterval> | undefined;
 };
 
 /**
@@ -36,10 +37,11 @@ export type ServerPollTimer = {
  * a list of options to vote on, and a timer.
  */
 export type ServerConversationAreaPoll = {
-  creator: ServerPlayer;
+  creator: string;
   prompt: string;
   options: ServerPollOption[];
   timer: ServerPollTimer;
+  expired: boolean;
 };
 
 export type ServerConversationArea = {
@@ -141,6 +143,17 @@ export interface ConversationAreaCreateRequest {
   sessionToken: string;
   conversationArea: ServerConversationArea;
 }
+
+/**
+ * Payload sent by the client to create a new conversation area poll
+ */
+export interface ConversationAreaPollCreateRequest {
+  coveyTownID: string;
+  sessionToken: string;
+  conversationArea: ServerConversationArea;
+  poll: ServerConversationAreaPoll;
+}
+
 
 /**
  * Envelope that wraps any response from the server

@@ -15,20 +15,26 @@ export type BoundingBox = {
   height: number;
 };
 
-// TODO
+/**
+ * A poll option has a location, a string representing its text, and a list of voters.
+ */
 export type ServerPollOption = {
+  location: BoundingBox;
   text: string;
   voters: string[];
-  location: GridSquare;
-  addVoter?: string;
-  removeVoter?: string;
 };
 
-// TODO
+/**
+ * A poll timer has a duration which keeps track of the current time left for some poll.
+ */
 export type ServerPollTimer = {
   duration: number;
 };
 
+/**
+ * A conversation area poll has a creator who started the poll, a prompt question being asked, 
+ * a list of options to vote on, and a timer.
+ */
 export type ServerConversationAreaPoll = {
   creator: ServerPlayer;
   prompt: string;

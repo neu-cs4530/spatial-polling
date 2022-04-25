@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { customAlphabet, nanoid } from 'nanoid';
 import { BoundingBox, ServerConversationArea, ServerConversationAreaPoll } from '../client/TownsServiceClient';
 import { ChatMessage, UserLocation } from '../CoveyTypes';

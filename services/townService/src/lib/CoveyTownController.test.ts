@@ -2,7 +2,7 @@ import { mock, mockDeep, mockReset } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import { Socket } from 'socket.io';
 import * as TestUtils from '../client/TestUtils';
-import { GridSquare, ServerConversationArea, ServerPollOption } from '../client/TownsServiceClient';
+import { GridSquare, ServerConversationArea } from '../client/TownsServiceClient';
 import { UserLocation } from '../CoveyTypes';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownListener from '../types/CoveyTownListener';
@@ -481,61 +481,62 @@ describe('CoveyTownController', () => {
         box: { x1: 100, x2: 100, y1: 400, y2: 400 },
       });
     });
-  it('Ensure .addVoter works correctly', async () => {
-    const player2 = new Player(nanoid());
-    const player3 = new Player(nanoid());
+    it('Ensure .addVoter works correctly', async () => {
+      const player2 = new Player(nanoid());
 
-    const conversationAreaPoll = TestUtils.createConversationPollForTesting({
-      prompt: 'Best Fruit',
-      creator: player,
+      const conversationAreaPoll = TestUtils.createConversationPollForTesting({
+        prompt: 'Best Fruit',
+        creator: player,
+      });
+
+      // Ensures 'PollOptions.addVoter' method works
+      newConversationArea.activePoll = conversationAreaPoll;
+      newConversationArea.activePoll.options[0].voters.push(player2.id);
+      expect(newConversationArea.activePoll.options.length).toEqual(2);
+      expect(newConversationArea.activePoll.options[0].voters[1]).toEqual(player2.id);
     });
-
-    // Ensures 'PollOptions.addVoter' method works
-    newConversationArea.activePoll = conversationAreaPoll;
-    newConversationArea.activePoll.options[0].voters.push(player2.id);
-    expect(newConversationArea.activePoll.options.length).toEqual(2);
-    expect(newConversationArea.activePoll.options[0].voters[1]).toEqual(player2.id);
-  });
-  it('Ensure there is >= 0 voters for a PollOption', async () => {
-    const conversationAreaPoll = TestUtils.createConversationPollForTesting({
-      prompt: 'Best Fruit',
-      creator: player,
-      options: [
-        {
-          location: {
-            height: 10,
-            width: 10,
-            x: 10,
-            y: 10,
+    it('Ensure there is >= 0 voters for a PollOption', async () => {
+      const conversationAreaPoll = TestUtils.createConversationPollForTesting({
+        prompt: 'Best Fruit',
+        creator: player,
+        options: [
+          {
+            location: {
+              height: 10,
+              width: 10,
+              x: 10,
+              y: 10,
+            },
+            text: 'Grape',
+            voters: [],
           },
-          text: 'Grape',
-          voters: [],
-        },
-      ],
-    });
+        ],
+      });
 
-    // Ensure it doesn't accept an empty array of Voters
-    testingTown.addConversationAreaPoll(newConversationArea, conversationAreaPoll);
-    expect(newConversationArea.activePoll).toBeUndefined();
-  });
-  it("Ensure the same player can't be answered twice", async () => {
-    const conversationAreaPoll = TestUtils.createConversationPollForTesting({
-      prompt: 'Best Fruit',
-      creator: player,
-      // option locations are arbitrary for this test
-      options: [
-        {location: {x: 10, y: 10, width: 5, height: 5}, 
-        text: 'option1', 
-        voters: []}, 
-        {location: {x: 20, y: 20, width: 5, height: 5}, 
-        text: 'option2', 
-        voters: []}]
+      // Ensure it doesn't accept an empty array of Voters
+      testingTown.addConversationAreaPoll(newConversationArea, conversationAreaPoll);
+      expect(newConversationArea.activePoll).toBeUndefined();
     });
+    it("Ensure the same player can't be answered twice", async () => {
+      const conversationAreaPoll = TestUtils.createConversationPollForTesting({
+        prompt: 'Best Fruit',
+        creator: player,
+        // option locations are arbitrary for this test
+        options: [
+          { location: { x: 10, y: 10, width: 5, height: 5 }, 
+            text: 'option1', 
+            voters: [] }, 
+          { location: { x: 20, y: 20, width: 5, height: 5 }, 
+            text: 'option2', 
+            voters: [] }],
+      });
 
-    testingTown.addConversationAreaPoll(newConversationArea, conversationAreaPoll);
-    newConversationArea.activePoll!.options[0].voters.push(player.id);
-    expect(newConversationArea.activePoll!.options[0].voters[0]).toEqual(player.id);
-    expect(newConversationArea.activePoll!.options[0].voters.length).toEqual(1);
-  });
+      testingTown.addConversationAreaPoll(newConversationArea, conversationAreaPoll);
+      if (newConversationArea.activePoll) {
+        newConversationArea.activePoll.options[0].voters.push(player.id);
+        expect(newConversationArea.activePoll.options[0].voters[0]).toEqual(player.id);
+        expect(newConversationArea.activePoll.options[0].voters.length).toEqual(1);
+      }
+    });
   });
 });

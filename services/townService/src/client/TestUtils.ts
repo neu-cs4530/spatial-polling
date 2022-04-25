@@ -12,7 +12,6 @@ import {
   ServerConversationArea,
   ServerConversationAreaPoll,
   ServerPollOption,
-  ServerPollTimer,
 } from './TownsServiceClient';
 
 export type RemoteServerPlayer = {
@@ -147,7 +146,7 @@ export function createConversationPollForTesting(params: {
     prompt: params.prompt,
     timer: { 
       duration: 1500, 
-      timer: undefined},
-    expired: false
+      timer: undefined },
+    expired: false,
   };
 }

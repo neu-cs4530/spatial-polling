@@ -31,29 +31,10 @@ export type ServerPollOption = {
         return this._voters;
     }
 
-
-    /**
-     * Add a given voter to the list of voters.
-     * @param player 
-     */
-    set addVoter(playerId: string){
-        if (!this._voters.includes(playerId)){
-            this._voters.push(playerId);
-        }
-    }
-
-    /**
-    * Remove a given voter from the list of voters.
-    * @param player 
-    */
-    set removeVoter(playerId: string) {
-        this._voters.splice(this._voters.findIndex(p => playerId === p), 1);
-
     set voters(newVoters: string[]) {
       if (newVoters.length !== this._voters.length || !newVoters.every((val, index) => val === this._voters[index])){
         this._voters = newVoters;
       }
-
     }
  
     toServerPollOption(): ServerPollOption {

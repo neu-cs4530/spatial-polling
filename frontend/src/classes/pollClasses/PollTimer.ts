@@ -1,18 +1,13 @@
 // TODO
 export type ServerPollTimer = {
-    maxTime: number;
-  
     duration: number;
-  
     timer: ReturnType<typeof setInterval> | undefined;
-  
-    isPaused: boolean;
   };
 
 export default class PollTimer {
   maxTime: number;
 
-  duration: number;
+  private _duration: number;
 
   timer: ReturnType<typeof setInterval> | undefined;
 
@@ -20,8 +15,16 @@ export default class PollTimer {
 
   constructor (duration: number) {
       this.maxTime = duration;
-      this.duration = duration;
+      this._duration = duration;
       this.isPaused = false;
+  }
+
+  get duration() {
+      return this._duration;
+  }
+
+  set duration(newDur: number) {
+    this._duration = newDur;
   }
 
   /**
@@ -56,4 +59,10 @@ export default class PollTimer {
       this.isPaused = !this.isPaused;
   }
 
+  toServerPollTimer(): ServerPollTimer {
+      return {
+          duration: this.duration,
+          timer: this.timer,
+      };
+    }
 }

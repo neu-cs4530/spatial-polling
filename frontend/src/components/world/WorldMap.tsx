@@ -8,7 +8,6 @@ import useConversationAreas from '../../hooks/useConversationAreas';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 import usePlayerMovement from '../../hooks/usePlayerMovement';
 import usePlayersInTown from '../../hooks/usePlayersInTown';
-import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import { Callback } from '../VideoCall/VideoFrontend/types';
 import NewConversationModal from './NewCoversationModal';
 import NewConversationPollModal from './NewConversationPollModal';
@@ -563,7 +562,7 @@ class CoveyGameScene extends Phaser.Scene {
           }
 
           // only show instructions to create a poll and listen for shift if no current active poll
-          if (conv.conversationArea.activePoll) {
+          if (conv.conversationArea.activePoll && !conv.conversationArea.activePoll.expired) {
             this.pollTextBox?.setVisible(false);
           } else {
             this.pollTextBox?.setVisible(true);
@@ -834,11 +833,12 @@ export default function WorldMap(): JSX.Element {
         <ActiveConversationPollModal 
           conversation={gameScene?.currCA}
           poll={newPoll}
+          players={players}
         />
       );
     }
     return <></>;
-  }, [gameScene?.currCA, gameScene?.currPoll, newPoll]);
+  }, [gameScene?.currCA, gameScene?.currPoll, newPoll, players]);
 
   return (
     <div id='app-container'>
@@ -846,7 +846,6 @@ export default function WorldMap(): JSX.Element {
       {newPollModal}
       <div id='map-container' />
       <div id='social-container'>
-        <SocialSidebar />
         {activePollView}
       </div>
     </div>

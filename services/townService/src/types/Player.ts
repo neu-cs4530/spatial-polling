@@ -55,10 +55,10 @@ export default class Player {
    */
   isWithin(box: BoundingBox) : boolean {
     return (
-      this.location.x > box.x - box.width / 2 &&
-      this.location.x < box.x + box.width / 2 &&
-      this.location.y > box.y - box.height / 2 &&
-      this.location.y < box.y + box.height / 2
+      (this.location.x + 16) > box.x - box.width / 2 &&
+      (this.location.x + 16) < box.x + box.width / 2 &&
+      (this.location.y + 32) > box.y - box.height / 2 &&
+      (this.location.y + 32) < box.y + box.height / 2
     );
   }
 

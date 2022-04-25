@@ -29,7 +29,6 @@ export type ServerPollOption = {
  */
 export type ServerPollTimer = {
   duration: number;
-  timer: ReturnType<typeof setInterval> | undefined;
 };
 
 /**

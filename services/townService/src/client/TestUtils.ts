@@ -1,17 +1,14 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import http from 'http';
 import { nanoid } from 'nanoid';
 import { AddressInfo } from 'net';
 import { Socket as ServerSocket } from 'socket.io';
 import { io, Socket } from 'socket.io-client';
 import { UserLocation } from '../CoveyTypes';
-// import Player from '../types/Player';
 import {
   BoundingBox,
-  // GridSquare,
   ServerConversationArea,
-  // ServerConversationAreaPoll,
-  // ServerPollOption,
+  ServerConversationAreaPoll,
+  ServerPollOption,
 } from './TownsServiceClient';
 
 export type RemoteServerPlayer = {
@@ -124,30 +121,50 @@ export function createConversationForTesting(params?: {
   };
 }
 
-// export function createConversationPollForTesting(params: {
-//   prompt: string;
-//   creator: Player;
-//   options?: ServerPollOption[];
-// }): ServerConversationAreaPoll {
-//   const gridSquare: GridSquare = {
-//     box: { x1: 10, x2: 10, y1: 10, y2: 10 },
-//     height: 10,
-//     width: 10,
-//     x: 10,
-//     y: 10,
-//   };
-//   const pollOptions: ServerPollOption[] = [
-//     { location: gridSquare, text: 'Grape', voters: [params.creator.id] },
-//     { location: gridSquare, text: 'Apple', voters: [params.creator.id] },
-//   ];
-//   return {
-//     creator: {
-//       _id: params.creator.id,
-//       _userName: params.creator.userName,
-//       location: params.creator.location,
-//     },
-//     options: params.options || pollOptions,
-//     prompt: params.prompt,
-//     timer: { duration: 1500 },
-//   };
-// }
+export function createConversationPollForTesting(params: {
+  prompt: string;
+  options?: ServerPollOption[];
+  creator: string;
+}): ServerConversationAreaPoll | undefined {
+
+  if (!params.prompt) {
+    return undefined;
+  }
+
+  const conversationBB: BoundingBox = {
+    height: 100,
+    width: 200,
+    x: 100,
+    y: 100,
+  };
+  
+  const w = conversationBB.width / 2;
+  const h = conversationBB.height / 2;
+
+  const q1: BoundingBox = {
+    height: h,
+    width: w,
+    x: conversationBB.x - w / 2, 
+    y: conversationBB.y - h / 2, 
+  };
+
+  const q2: BoundingBox = {
+    height: h,
+    width: w,
+    x: conversationBB.x + w / 2, 
+    y: conversationBB.y - h / 2, 
+  };
+
+  const randID = '1234';
+  const pollOptions: ServerPollOption[] = [
+    { location: q1, text: 'Grape', voters: [randID] },
+    { location: q2, text: 'Apple', voters: [] },
+  ];
+  return {
+    creator: params.creator,
+    options: params.options || pollOptions,
+    prompt: params.prompt,
+    timer: { duration: 1500 },
+    expired: false,
+  };
+}

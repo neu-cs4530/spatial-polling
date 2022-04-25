@@ -522,12 +522,20 @@ describe('CoveyTownController', () => {
     const conversationAreaPoll = TestUtils.createConversationPollForTesting({
       prompt: 'Best Fruit',
       creator: player,
+      // option locations are arbitrary for this test
+      options: [
+        {location: {x: 10, y: 10, width: 5, height: 5}, 
+        text: 'option1', 
+        voters: []}, 
+        {location: {x: 20, y: 20, width: 5, height: 5}, 
+        text: 'option2', 
+        voters: []}]
     });
 
-    newConversationArea.activePoll = conversationAreaPoll;
-    newConversationArea.activePoll.options[0].voters.push(player.id);
-    expect(newConversationArea.activePoll.options[0].voters[0]).toEqual(player.id);
-    expect(newConversationArea.activePoll.options[0].voters.length).toEqual(1);
+    testingTown.addConversationAreaPoll(newConversationArea, conversationAreaPoll);
+    newConversationArea.activePoll!.options[0].voters.push(player.id);
+    expect(newConversationArea.activePoll!.options[0].voters[0]).toEqual(player.id);
+    expect(newConversationArea.activePoll!.options[0].voters.length).toEqual(1);
   });
   });
 });

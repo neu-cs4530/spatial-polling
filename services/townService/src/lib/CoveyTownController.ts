@@ -264,6 +264,7 @@ export default class CoveyTownController {
     if (!_poll.prompt || _poll.options.length < 2) {
       return false;
     }
+
     const newPoll : ServerConversationAreaPoll = Object.assign(_poll);
 
     // add people standing in the conversation to voter arrays

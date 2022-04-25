@@ -381,31 +381,7 @@ describe('CoveyTownController', () => {
       });
 
       // Ensures it doesn't set '.activePoll' to ConversationAreaPoll without a PollOption
-      newConversationArea.activePoll = wrongConversationAreaPoll;
-      expect(newConversationArea.activePoll).toBeUndefined();
-    });
-    it('it must not have more options than tiles in the area', () => {
-      const wrongPollOption: ServerPollOption[] = [];
-      const gridSquare: GridSquare = {
-        box: { x1: 10, x2: 10, y1: 10, y2: 10 },
-        height: 10,
-        width: 10,
-        x: 10,
-        y: 10,
-      };
-
-      for (let i = 0; i < 500; i += 1) {
-        wrongPollOption.push({ location: gridSquare, text: 'Grape', voters: [player.id] });
-      }
-
-      const wrongConversationAreaPoll = TestUtils.createConversationPollForTesting({
-        prompt: 'Best Fruit',
-        creator: player,
-        options: wrongPollOption,
-      });
-
-      // Ensures it doesn't set '.activePoll' to a ConversationAreaPoll with more PollOptions than Tiles
-      newConversationArea.activePoll = wrongConversationAreaPoll;
+      testingTown.addConversationAreaPoll(newConversationArea, wrongConversationAreaPoll);
       expect(newConversationArea.activePoll).toBeUndefined();
     });
   });
@@ -491,7 +467,7 @@ describe('CoveyTownController', () => {
       });
 
       // Ensure it doens't set '.activePoll' to a ConversationArea with PollOptions that has undefined properties
-      newConversationArea.activePoll = wrongConversationAreaPoll;
+      testingTown.addConversationAreaPoll(newConversationArea, wrongConversationAreaPoll);
       expect(newConversationArea.activePoll).toBeUndefined();
 
       // Ensure it does set '.activePoll' to a ConversationArea with correct PollOption properties
@@ -518,7 +494,7 @@ describe('CoveyTownController', () => {
     newConversationArea.activePoll = conversationAreaPoll;
     newConversationArea.activePoll.options[0].voters.push(player2.id);
     expect(newConversationArea.activePoll.options.length).toEqual(2);
-    expect(newConversationArea.activePoll.options[1]).toEqual(player2.id);
+    expect(newConversationArea.activePoll.options[0].voters[1]).toEqual(player2.id);
   });
   it('Ensure there is >= 0 voters for a PollOption', async () => {
     const conversationAreaPoll = TestUtils.createConversationPollForTesting({
@@ -538,8 +514,8 @@ describe('CoveyTownController', () => {
       ],
     });
 
-    // Ensure it doesn't accpet an empty array of Voters
-    newConversationArea.activePoll = conversationAreaPoll;
+    // Ensure it doesn't accept an empty array of Voters
+    testingTown.addConversationAreaPoll(newConversationArea, conversationAreaPoll);
     expect(newConversationArea.activePoll).toBeUndefined();
   });
   it("Ensure the same player can't be answered twice", async () => {

@@ -260,6 +260,10 @@ export default class CoveyTownController {
       return false;
     }    
 
+    // if the provided conversation area poll is invalid (ex. empty prompt, insufficient options)
+    if (!_poll.prompt || _poll.options.length < 2) {
+      return false;
+    }
     const newPoll : ServerConversationAreaPoll = Object.assign(_poll);
 
     // add people standing in the conversation to voter arrays

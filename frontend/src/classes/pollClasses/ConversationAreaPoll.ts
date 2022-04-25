@@ -8,6 +8,7 @@ export type ServerConversationAreaPoll = {
   prompt: string;
   options: ServerPollOption[];
   timer: ServerPollTimer;
+  expired: boolean;
 };
 
 /** 
@@ -21,16 +22,14 @@ export type ServerConversationAreaPoll = {
  * @returns a list of PollOption objects
  */
  function assignOptionsToTiles(boundingBox: BoundingBox, options: string[]): PollOption[] {
-  const tiles: BoundingBox[] = boundingBox.getTiles();
+  const tiles: BoundingBox[] = boundingBox.getQuadrants();
   const pollOptions: PollOption[] = [];
 
   // can't have more options than tiles
   if (options.length <= tiles.length) {
-    // assign each option to random tile of conversation
-    options.forEach((o) => {
-      const randomIndex = Math.floor(Math.random() * tiles.length);
-      pollOptions.push(new PollOption(o, tiles[randomIndex]));
-      tiles.splice(randomIndex, 1);
+    // assign each option to a tile of conversation
+    options.forEach((o, i) => {
+      pollOptions.push(new PollOption(o, tiles[i]));
     });
   }
   return pollOptions;
@@ -48,6 +47,8 @@ export default class ConversationAreaPoll {
 
   public timer: PollTimer;
 
+  public expired: boolean;
+
   /** The unique identifier for this poll * */
   private readonly _id: string;
 
@@ -64,6 +65,7 @@ export default class ConversationAreaPoll {
     this.creatorID = creatorID;
     this.timer = new PollTimer(duration);
     this._id = nanoid();
+    this.expired = false;
 
     if (!assignOptionsToTiles(boundingBox, options).length) {
       throw new Error('error: more poll options than tiles');
@@ -78,11 +80,13 @@ export default class ConversationAreaPoll {
   }
 
   toServerConversationAreaPoll(): ServerConversationAreaPoll {
+    const serverPollOps = this.options.map(o => o.toServerPollOption());
     return {
       creator: this.creatorID,
       prompt: this.prompt,
-      options: this.options,
-      timer: this.timer,
+      options: serverPollOps,
+      timer: this.timer.toServerPollTimer(),
+      expired: this.expired,
     };
   }
 }

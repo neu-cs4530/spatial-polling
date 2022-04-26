@@ -12,12 +12,10 @@ export type ServerConversationAreaPoll = {
 };
 
 /** 
- * ConversationAreaPoll constructor must turn a list of string poll options to a list of PollOptions. 
+ * Helper for ConversationAreaPoll constructor which turns a list of string poll options to a list of PollOptions.
  * 
- * In order to do this, it must figure out the available tiles within this conversation area, and map 
- * each option to some tile, without overlaps.
- * @param conversation the conversation area this poll is in
- * @param options the list of string options players can vote for. length >= 1.
+ * @param boundingBox the bounding box of the conversation area this poll is in
+ * @param options the list of string options players can vote for, with 2 <= len(options) <= 4
  * 
  * @returns a list of PollOption objects
  */
@@ -25,9 +23,7 @@ export type ServerConversationAreaPoll = {
   const tiles: BoundingBox[] = boundingBox.getQuadrants();
   const pollOptions: PollOption[] = [];
 
-  // can't have more options than tiles
   if (options.length <= tiles.length) {
-    // assign each option to a tile of conversation
     options.forEach((o, i) => {
       pollOptions.push(new PollOption(o, tiles[i]));
     });
@@ -39,14 +35,19 @@ export type ServerConversationAreaPoll = {
  * A spatial poll within a conversation area is represented by a ConversationAreaPoll object
  */
 export default class ConversationAreaPoll {
+  /** The polling question asked * */ 
   public prompt: string;
-
+  
+  /** The id of the player who created the poll * */ 
   public creatorID: string;
 
+  /** The list of options which may be voted for * */ 
   public options: PollOption[];
 
+  /** The timer object which maintains the state of time left in the poll * */ 
   public timer: PollTimer;
 
+  /** Flag indicating whether or not this poll is still active (accepting votes) * */ 
   public expired: boolean;
 
   /** The unique identifier for this poll * */

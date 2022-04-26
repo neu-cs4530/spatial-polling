@@ -1,9 +1,11 @@
-// TODO
 export type ServerPollTimer = {
     duration: number;
     timer: ReturnType<typeof setInterval> | undefined;
   };
 
+/**
+ * A ConversationAreaPoll's timer is represented by a PollTimer object
+ */
 export default class PollTimer {
   maxTime: number;
 
@@ -28,8 +30,7 @@ export default class PollTimer {
   }
 
   /**
-   * Basic timer structure for PollTimer class. Functionality will likely change
-   * as project continues
+   * While not paused, decrement the current duration by one until time runs out.
    */
   startTimer() {
       this.timer = setInterval(() => {
@@ -38,7 +39,6 @@ export default class PollTimer {
           }
           if (this.duration === 0 && this.timer) {
               clearInterval(this.timer);
-              // additional functionality (ex. calling listeners, returns, etc to be added at a later date)
           }
       }, 1000);
   }

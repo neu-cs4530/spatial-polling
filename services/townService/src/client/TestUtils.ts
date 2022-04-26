@@ -5,13 +5,13 @@ import { AddressInfo } from 'net';
 import { Socket as ServerSocket } from 'socket.io';
 import { io, Socket } from 'socket.io-client';
 import { UserLocation } from '../CoveyTypes';
-// import Player from '../types/Player';
+import Player from '../types/Player';
 import {
   BoundingBox,
-  // GridSquare,
+  GridSquare,
   ServerConversationArea,
-  // ServerConversationAreaPoll,
-  // ServerPollOption,
+  ServerConversationAreaPoll,
+  ServerPollOption,
 } from './TownsServiceClient';
 
 export type RemoteServerPlayer = {
@@ -124,30 +124,34 @@ export function createConversationForTesting(params?: {
   };
 }
 
-// export function createConversationPollForTesting(params: {
-//   prompt: string;
-//   creator: Player;
-//   options?: ServerPollOption[];
-// }): ServerConversationAreaPoll {
-//   const gridSquare: GridSquare = {
-//     box: { x1: 10, x2: 10, y1: 10, y2: 10 },
-//     height: 10,
-//     width: 10,
-//     x: 10,
-//     y: 10,
-//   };
-//   const pollOptions: ServerPollOption[] = [
-//     { location: gridSquare, text: 'Grape', voters: [params.creator.id] },
-//     { location: gridSquare, text: 'Apple', voters: [params.creator.id] },
-//   ];
-//   return {
-//     creator: {
-//       _id: params.creator.id,
-//       _userName: params.creator.userName,
-//       location: params.creator.location,
-//     },
-//     options: params.options || pollOptions,
-//     prompt: params.prompt,
-//     timer: { duration: 1500 },
-//   };
-// }
+export function createConversationPollForTesting(params: {
+  prompt: string;
+  creator: string;
+  options?: ServerPollOption[];
+}): ServerConversationAreaPoll {
+  const boundingBox1: BoundingBox = {
+    height: 10,
+    width: 10,
+    x: 10,
+    y: 10,
+  };
+  const boundingBox2: BoundingBox = {
+    height: 10,
+    width: 10,
+    x: 20,
+    y: 20,
+  };
+  const pollOptions: ServerPollOption[] = [
+    { location: boundingBox1, text: 'Grape', voters: [params.creator] },
+    { location: boundingBox2, text: 'Apple', voters: [params.creator] },
+  ];
+  return {
+    creator: params.creator,
+    options: params.options || pollOptions,
+    prompt: params.prompt,
+    timer: { 
+      duration: 1500, 
+      timer: undefined },
+    expired: false,
+  };
+}

@@ -245,7 +245,7 @@ export default class CoveyTownController {
    * Assigns to given poll to be the active poll of this conversation area if there it
    * does not currently have an active poll.
    *
-   * Notifies any CoveyTownListeners that the conversation has been updated ??
+   * Notifies any CoveyTownListeners that the conversation (its activePoll) has been updated
    *
    * @param _conversationArea Information describing the conversation area to add the poll to.
    * @param _poll Information describing the conversations new active poll.
@@ -255,7 +255,7 @@ export default class CoveyTownController {
   addConversationAreaPoll(_conversationArea: ServerConversationArea, _poll: ServerConversationAreaPoll): boolean {
     const conversation = this.conversationAreas.find(conv => conv.label === _conversationArea.label);
 
-    // if the given conversation doesnt exist or already has a poll thats not expired
+    // Error if the given conversation does not exist or already has a poll that is not expired
     if (!conversation || (conversation.activePoll && !conversation.activePoll.expired)) {
       return false;
     }    
@@ -267,16 +267,17 @@ export default class CoveyTownController {
 
     const newPoll : ServerConversationAreaPoll = Object.assign(_poll);
 
-    // add people standing in the conversation to voter arrays
+    // Add people standing in the conversation to the lists of voters
     const playersInConversation = this.players.filter(player => player.isWithin(conversation.boundingBox));
     newPoll.options.forEach(option => {
       const playersInQuadrant = playersInConversation.filter(p => p.isWithin(option.location));
       option.voters = playersInQuadrant.map(player => player.id);
     });
 
+    // Begin the timer for this poll
     this.startPollTimer(conversation, newPoll);
     conversation.activePoll = newPoll;
-    // Notify other players that there is a new poll
+
     this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));      
     return true;
   }
@@ -284,19 +285,16 @@ export default class CoveyTownController {
   /**
    * Starts the timer for the given active poll using setInterval. Stops the timer once the duration hits zero.
    * 
-   * @param conversation 
-   * @param newPoll 
+   * @param conversation the conversation this poll is in
+   * @param newPoll the poll to be timed
    */
   startPollTimer(conversation: ServerConversationArea, newPoll: ServerConversationAreaPoll) : void {
-    // console.log(`starting timer for: ${newPoll.timer.duration}s`);
     const t = newPoll.timer;
     const runningTimer = setInterval(() => {
       if (t.duration === 0) {
-        // console.log('poll expired');
         newPoll.expired = true;
         clearInterval(runningTimer);
       } else {
-        // console.log(`decremented dur: ${t.duration}`);
         t.duration -= 1;  
       }
       this._listeners.forEach(listener => listener.onConversationAreaUpdated(conversation));   

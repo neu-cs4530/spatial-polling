@@ -7,10 +7,9 @@ export type ServerPollOption = {
   };
 
 
-/** A PollOption class which defines the state of one poll choice and manages changes
- * to the state as users move in and out of this poll option's location.
+/** 
+ * A ConversationAreaPoll has a list of PollOption, each representing an option to be voted for on a poll.
  */
-
  export default class PollOption {
 
      /** location of the poll * */ 
@@ -31,6 +30,7 @@ export type ServerPollOption = {
         return this._voters;
     }
 
+    /** Manages changes to the state as users move in and out of this poll option's location. * */
     set voters(newVoters: string[]) {
       if (newVoters.length !== this._voters.length || !newVoters.every((val, index) => val === this._voters[index])){
         this._voters = newVoters;

@@ -6,7 +6,6 @@ import { io, Socket } from 'socket.io-client';
 import { UserLocation } from '../CoveyTypes';
 import {
   BoundingBox,
-  GridSquare,
   ServerConversationArea,
   ServerConversationAreaPoll,
   ServerPollOption,
@@ -124,48 +123,32 @@ export function createConversationForTesting(params?: {
 
 export function createConversationPollForTesting(params: {
   prompt: string;
-  options?: ServerPollOption[];
   creator: string;
-}): ServerConversationAreaPoll | undefined {
-
-  if (!params.prompt) {
-    return undefined;
-  }
-
-  const conversationBB: BoundingBox = {
-    height: 100,
-    width: 200,
-    x: 100,
-    y: 100,
+  options?: ServerPollOption[];
+}): ServerConversationAreaPoll {
+  const boundingBox1: BoundingBox = {
+    height: 10,
+    width: 10,
+    x: 10,
+    y: 10,
   };
-
-  const w = conversationBB.width / 2;
-  const h = conversationBB.height / 2;
-
-  const q1: BoundingBox = {
-    height: h,
-    width: w,
-    x: conversationBB.x - w / 2, 
-    y: conversationBB.y - h / 2, 
+  const boundingBox2: BoundingBox = {
+    height: 10,
+    width: 10,
+    x: 20,
+    y: 20,
   };
-
-  const q2: BoundingBox = {
-    height: h,
-    width: w,
-    x: conversationBB.x + w / 2, 
-    y: conversationBB.y - h / 2, 
-  };
-
-  const randID = '1234';
   const pollOptions: ServerPollOption[] = [
-    { location: q1, text: 'Grape', voters: [randID] },
-    { location: q2, text: 'Apple', voters: [] },
+    { location: boundingBox1, text: 'Grape', voters: [params.creator] },
+    { location: boundingBox2, text: 'Apple', voters: [] },
   ];
   return {
     creator: params.creator,
     options: params.options || pollOptions,
     prompt: params.prompt,
-    timer: { duration: 1500 },
+    timer: { 
+      duration: 1500,
+    },
     expired: false,
   };
 }

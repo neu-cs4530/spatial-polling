@@ -8,19 +8,20 @@ import {
   Th,
   Thead,
   Tr,
-  } from '@chakra-ui/react';
-  import ConversationArea from '../../classes/ConversationArea';
-  import Player from '../../classes/Player';
-  import ConversationAreaPoll from '../../classes/pollClasses/ConversationAreaPoll';
-  import PollOption from '../../classes/pollClasses/PollOption';
-  import './styles.scss'
+} from '@chakra-ui/react';
+import ConversationArea from '../../classes/ConversationArea';
+import Player from '../../classes/Player';
+import ConversationAreaPoll from '../../classes/pollClasses/ConversationAreaPoll';
+import PollOption from '../../classes/pollClasses/PollOption';
+import './styles.scss'
 
-  type ActiveConversationPollModalProps = {
-      poll: ConversationAreaPoll;
-      conversation: ConversationArea;
-      players: Player[];
-  }
+type ActiveConversationPollModalProps = {
+    poll: ConversationAreaPoll;
+    conversation: ConversationArea;
+    players: Player[];
+}
 
+// Turn a number of seconds into a time formatted string for display
 function parseTime(time: number | undefined): string {
   if (time) {
     const minute = Math.trunc(time / 60).toString();
@@ -33,11 +34,14 @@ function parseTime(time: number | undefined): string {
   return '';
 }
 
+// Modal for displaying the content of an active poll: the polling question, its polling options, and 
+// the tallies of votes for those options. Content depends on whether or not the poll has expired yet. 
 export default function ActiveConversationPollModal( {poll, conversation, players} : ActiveConversationPollModalProps ) {
-     
+  
+  // the colors of the 4 quadrants of a conversation area
   const colors = ['#C88A88', '#AACDE9','#A89BCA','#81B7BA'];
 
-  // get the user names of the voters who voted from this option
+  // Get the usernames of the players who voted for the given option
   function getVoters(o: PollOption) {
     const voterNames: string[] = [];    
     o.voters.forEach(voterID => {
@@ -49,6 +53,7 @@ export default function ActiveConversationPollModal( {poll, conversation, player
     return voterNames.join();
   }
 
+  // Calculate the percentage of occupants voting for the given option
   function getPercent(o: PollOption, c: ConversationArea) {
     return (o.voters.length / c.occupants?.length) * 100;
   }

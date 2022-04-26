@@ -2,7 +2,7 @@ import { mock, mockDeep, mockReset } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import { Socket } from 'socket.io';
 import * as TestUtils from '../client/TestUtils';
-import { BoundingBox, GridSquare, ServerConversationArea, ServerPollOption } from '../client/TownsServiceClient';
+import { BoundingBox, ServerConversationArea } from '../client/TownsServiceClient';
 import { UserLocation } from '../CoveyTypes';
 import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHandlers';
 import CoveyTownListener from '../types/CoveyTownListener';

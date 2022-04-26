@@ -358,11 +358,11 @@ describe('CoveyTownController', () => {
     it('must contain a prompt', () => {
       const wrongConversationAreaPoll = TestUtils.createConversationPollForTesting({
         prompt: '',
-        creator: player,
+        creator: player.id,
       });
       const conversationAreaPoll = TestUtils.createConversationPollForTesting({
         prompt: 'Best Fruit',
-        creator: player,
+        creator: player.id,
       });
 
       // Ensures it doesn't set '.activePoll' to a ConversationAreaPoll without a prompt
@@ -376,7 +376,7 @@ describe('CoveyTownController', () => {
     it('must have at least one pollOption', () => {
       const wrongConversationAreaPoll = TestUtils.createConversationPollForTesting({
         prompt: 'Best Fruit',
-        creator: player,
+        creator: player.id,
         options: [],
       });
 
@@ -404,7 +404,7 @@ describe('CoveyTownController', () => {
     it('ensures activePoll sets conversationAreaPoll to the conversationArea', async () => {
       const conversationAreaPoll = TestUtils.createConversationPollForTesting({
         prompt: 'Best Fruit',
-        creator: player,
+        creator: player.id,
       });
       newConversationArea.activePoll = conversationAreaPoll;
       expect(newConversationArea.activePoll).toEqual(conversationAreaPoll);
@@ -412,14 +412,14 @@ describe('CoveyTownController', () => {
     it('ensures a conversationAreas active poll is updated to a new active poll and a server conversation at most one active poll at a time', async () => {
       const conversationAreaPoll = TestUtils.createConversationPollForTesting({
         prompt: 'Best Fruit',
-        creator: player,
+        creator: player.id,
       });
       newConversationArea.activePoll = conversationAreaPoll;
       expect(newConversationArea.activePoll).toEqual(conversationAreaPoll);
 
       const conversationAreaPoll2 = TestUtils.createConversationPollForTesting({
         prompt: 'Best Soup',
-        creator: player,
+        creator: player.id,
       });
       newConversationArea.activePoll = conversationAreaPoll2;
       expect(newConversationArea.activePoll).toEqual(conversationAreaPoll2);
@@ -451,7 +451,7 @@ describe('CoveyTownController', () => {
       };
       const wrongConversationAreaPoll = TestUtils.createConversationPollForTesting({
         prompt: 'Best Fruit',
-        creator: player,
+        creator: player.id,
         options: [
           {
             text: '',
@@ -462,7 +462,7 @@ describe('CoveyTownController', () => {
       });
       const conversationAreaPoll = TestUtils.createConversationPollForTesting({
         prompt: 'Best Fruit',
-        creator: player,
+        creator: player.id,
         options: [{ location: gridSquare, text: 'Grape', voters: [player.id] }],
       });
 
@@ -486,7 +486,7 @@ describe('CoveyTownController', () => {
 
       const conversationAreaPoll = TestUtils.createConversationPollForTesting({
         prompt: 'Best Fruit',
-        creator: player,
+        creator: player.id,
       });
 
       // Ensures 'PollOptions.addVoter' method works
@@ -498,7 +498,7 @@ describe('CoveyTownController', () => {
     it('Ensure there is >= 0 voters for a PollOption', async () => {
       const conversationAreaPoll = TestUtils.createConversationPollForTesting({
         prompt: 'Best Fruit',
-        creator: player,
+        creator: player.id,
         options: [
           {
             location: {
@@ -520,7 +520,7 @@ describe('CoveyTownController', () => {
     it("Ensure the same player can't be answered twice", async () => {
       const conversationAreaPoll = TestUtils.createConversationPollForTesting({
         prompt: 'Best Fruit',
-        creator: player,
+        creator: player.id,
         // option locations are arbitrary for this test
         options: [
           { location: { x: 10, y: 10, width: 5, height: 5 }, 

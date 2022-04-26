@@ -126,22 +126,27 @@ export function createConversationForTesting(params?: {
 
 export function createConversationPollForTesting(params: {
   prompt: string;
-  creator: Player;
+  creator: string;
   options?: ServerPollOption[];
 }): ServerConversationAreaPoll {
-  const gridSquare: GridSquare = {
-    box: { x1: 10, x2: 10, y1: 10, y2: 10 },
+  const boundingBox1: BoundingBox = {
     height: 10,
     width: 10,
     x: 10,
     y: 10,
   };
+  const boundingBox2: BoundingBox = {
+    height: 10,
+    width: 10,
+    x: 20,
+    y: 20,
+  };
   const pollOptions: ServerPollOption[] = [
-    { location: gridSquare, text: 'Grape', voters: [params.creator.id] },
-    { location: gridSquare, text: 'Apple', voters: [params.creator.id] },
+    { location: boundingBox1, text: 'Grape', voters: [params.creator] },
+    { location: boundingBox2, text: 'Apple', voters: [params.creator] },
   ];
   return {
-    creator: params.creator.id,
+    creator: params.creator,
     options: params.options || pollOptions,
     prompt: params.prompt,
     timer: { 

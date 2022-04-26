@@ -15,17 +15,26 @@ export type BoundingBox = {
   height: number;
 };
 
+/**
+ * A poll option has a location, a string representing its text, and a list of voters.
+ */
 export type ServerPollOption = {
   location: BoundingBox;
   text: string;
   voters: string[];
 };
 
+/**
+ * A poll timer keeps track of the current time left for some poll.
+ */
 export type ServerPollTimer = {
   duration: number;
-  timer: ReturnType<typeof setInterval> | undefined;
 };
 
+/**
+ * A conversation area poll has a creator who started the poll, a prompt question being asked, 
+ * a list of options to vote on, and a timer.
+ */
 export type ServerConversationAreaPoll = {
   creator: string;
   prompt: string;

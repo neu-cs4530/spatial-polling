@@ -36,7 +36,7 @@ export type ServerPollOption = {
         this._voters = newVoters;
       }
     }
-
+ 
     toServerPollOption(): ServerPollOption {
         return {
             location: this.location,

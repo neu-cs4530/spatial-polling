@@ -1,14 +1,11 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import http from 'http';
 import { nanoid } from 'nanoid';
 import { AddressInfo } from 'net';
 import { Socket as ServerSocket } from 'socket.io';
 import { io, Socket } from 'socket.io-client';
 import { UserLocation } from '../CoveyTypes';
-import Player from '../types/Player';
 import {
   BoundingBox,
-  GridSquare,
   ServerConversationArea,
   ServerConversationAreaPoll,
   ServerPollOption,
@@ -143,15 +140,15 @@ export function createConversationPollForTesting(params: {
   };
   const pollOptions: ServerPollOption[] = [
     { location: boundingBox1, text: 'Grape', voters: [params.creator] },
-    { location: boundingBox2, text: 'Apple', voters: [params.creator] },
+    { location: boundingBox2, text: 'Apple', voters: [] },
   ];
   return {
     creator: params.creator,
     options: params.options || pollOptions,
     prompt: params.prompt,
     timer: { 
-      duration: 1500, 
-      timer: undefined },
+      duration: 1500,
+    },
     expired: false,
   };
 }

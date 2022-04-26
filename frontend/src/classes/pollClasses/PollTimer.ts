@@ -1,9 +1,14 @@
-// TODO
 export type ServerPollTimer = {
     duration: number;
     timer: ReturnType<typeof setInterval> | undefined;
   };
 
+/**
+ * The Poll Timer class is used to keep track of how much time is remaining in an active poll.
+ * Its main and most important attribute, duration, represents the number of second left in the poll
+ * and decrements in one second intervals using setInterval. Additional infrastructure to potentially
+ * implement features like pausing and adding time is available, but not used in the current build.
+ */
 export default class PollTimer {
   maxTime: number;
 
@@ -13,6 +18,10 @@ export default class PollTimer {
 
   isPaused: boolean;
 
+  /**
+   * Constructor for a poll timer.
+   * @param duration The number of seconds this timer would count down for.
+   */
   constructor (duration: number) {
       this.maxTime = duration;
       this._duration = duration;
@@ -28,8 +37,8 @@ export default class PollTimer {
   }
 
   /**
-   * Basic timer structure for PollTimer class. Functionality will likely change
-   * as project continues
+   * Basic timer structure for PollTimer class. Once started, the time will decrease every second, like 
+   * a regular stop watch.
    */
   startTimer() {
       this.timer = setInterval(() => {
@@ -38,14 +47,13 @@ export default class PollTimer {
           }
           if (this.duration === 0 && this.timer) {
               clearInterval(this.timer);
-              // additional functionality (ex. calling listeners, returns, etc to be added at a later date)
           }
       }, 1000);
   }
 
   /**
-   * Allows adds a specified number of seconds to be added to a 
-   * @param seconds 
+   * Would allow a specified number of seconds to be added to a poll's duration
+   * @param seconds the number of seconds to add
    */
   addTime(seconds: number) {
       this.duration += seconds;
@@ -53,7 +61,7 @@ export default class PollTimer {
   }
 
   /**
-   * Pauses or unpauses timer
+   * Would pause or unpause timer
    */
   pauseTimer() {
       this.isPaused = !this.isPaused;
